@@ -19,6 +19,9 @@ servers:
   - url: <https://example.com/api/v1>
 paths:
   /students:
+    get:
+      $ref: ../swagger/paths/students/get.yaml
+  /students:
     post:
       $ref: ../swagger/paths/students/post.yaml #додаємо ще один шлях
   /students/{id}:
