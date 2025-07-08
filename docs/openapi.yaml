@@ -1,4 +1,4 @@
-# docs/openapi.yaml
+# /docs/openapi.yaml
 
 openapi: 3.1.0
 info:
@@ -11,13 +11,16 @@ info:
     This is a documentation of students app
 tags:
   - name: Students
-    description: Operations about users.
+    description: Operations about students.
   - name: Auth
     description: Auth operations.
 servers:
-  - url: <http://localhost:5000>
+  - url: <http://localhost:3000>
   - url: <https://example.com/api/v1>
 paths:
+  /students:
+    post:
+      $ref: ../swagger/paths/students/post.yaml #додаємо ще один шлях
   /students/{id}:
     get:
       $ref: ../swagger/paths/students/{id}/get.yaml
