@@ -4,6 +4,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { swaggerDocs } from "./middlewares/swaggerDocs.js";
 import sequelize from "../db/sequelize.js";
+import recipeRouter from '../routes/recipeRouter.js';
+import userRouter from '../routes/userRouter.js';
 
 dotenv.config();
 
@@ -20,6 +22,9 @@ app.use("/api-docs", ...swaggerDocs);
 
 import dbStatusRoute from "./dbStatusRoute.js";
 app.use("/db-status", dbStatusRoute);
+
+app.use('/api/recipes', recipeRouter);
+app.use('/api/users', userRouter);
 
 // Главная страница
 app.get("/", async (req, res) => {
@@ -87,6 +92,16 @@ app.get("/", async (req, res) => {
   }
 });
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  const { status = 500, message = "Server error" } = err;
+  res.status(status).json({ message });
+});
 
 try {
   await sequelize.authenticate();
@@ -99,3 +114,5 @@ try {
 } catch (error) {
   console.error("❌ Unable to connect to the DB:", error);
 }
+
+export default app;
