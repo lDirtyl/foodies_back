@@ -16,3 +16,4 @@ swagger/swagger-output.json
 tmp/
 temp/
 postgres_data/
+db/seed.js
