@@ -73,7 +73,7 @@ app.get("/", async (req, res) => {
       `;
     }
     res.send(`
-      <div style="font-family:sans-serif;max-width:800px;margin:40px auto;padding:24px;border:1px solid #eee;border-radius:8px;">
+      <div style="font-family:sans-serif;max-width:fit-content;margin:40px auto;padding:24px;border:1px solid #eee;border-radius:8px;">
         <h2 style="color:#4caf50;">база завантажена з render</h2>
         <p><b>юзерів у базі:</b> ${userCount}</p>
         <p style="margin:0 0 16px 0;"><small>${userNames}</small></p>
