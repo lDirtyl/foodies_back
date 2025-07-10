@@ -9,6 +9,6 @@ export async function getAllCategories(page, limit) {
   });
   return {
     categories: rows,
-    pagination: { page, limit, total: count },
+    pagination: { page: parseInt(page), limit: parseInt(limit), total: count },
   };
 }

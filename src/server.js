@@ -9,6 +9,7 @@ import userRouter from '../routes/userRouter.js';
 import categoriesRouter from '../routes/categoriesRouter.js';
 import areasRouter from '../routes/areasRouter.js';
 import ingredientsRouter from '../routes/ingredientsRouter.js';
+import testimonialsRouter from '../routes/testimonialsRouter.js';
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use('/api/users', userRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/areas', areasRouter);
 app.use('/api/ingredients', ingredientsRouter);
+app.use('/api/testimonials', testimonialsRouter);
 
 // Головна сторінка
 app.get("/", async (req, res) => {

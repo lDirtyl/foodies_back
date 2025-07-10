@@ -9,6 +9,6 @@ export async function getAllAreas(page, limit) {
   });
   return {
     areas: rows,
-    pagination: { page, limit, total: count },
+    pagination: { page: parseInt(page), limit: parseInt(limit), total: count },
   };
-} 
+}
