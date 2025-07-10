@@ -2,7 +2,8 @@ import * as recipeService from '../services/recipeService.js';
 import controllerWrapper from '../helpers/controllerWrapper.js';
 import HttpError from '../helpers/HttpError.js';
 import { validate as isUuid } from 'uuid';
-import { paginationSchema, createRecipeSchema } from '../schemas/recipeSchema.js';
+import { paginationSchema } from '../schemas/paginationSchema.js';
+import { createRecipeSchema } from '../schemas/recipeSchema.js';
 
 const searchRecipes = async (req, res, next) => {
   const { error, value } = paginationSchema.validate(req.query);

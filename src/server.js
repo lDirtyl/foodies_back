@@ -6,6 +6,7 @@ import { swaggerDocs } from "./middlewares/swaggerDocs.js";
 import sequelize from "../db/sequelize.js";
 import recipeRouter from '../routes/recipeRouter.js';
 import userRouter from '../routes/userRouter.js';
+import categoriesRouter from '../routes/categoriesRouter.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use("/db-status", dbStatusRoute);
 
 app.use('/api/recipes', recipeRouter);
 app.use('/api/users', userRouter);
+app.use('/api/categories', categoriesRouter);
 
 // Главная страница
 app.get("/", async (req, res) => {
