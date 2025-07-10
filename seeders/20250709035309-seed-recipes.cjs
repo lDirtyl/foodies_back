@@ -5,30 +5,12 @@ const fs = require("fs");
 const fsp = require("fs/promises");
 const path = require("path");
 const axios = require("axios");
-const { v4: uuidv4 } = require("uuid");
 
 const host = process.env.HOST || "localhost";
 const port = process.env.PORT || "";
 const baseUrl = port ? `http://${host}:${port}` : `http://${host}`;
 
 const imagesDir = path.resolve(__dirname, "../public/images/recipies");
-
-// 🔧 Удаление MongoDB ObjectId обёрток
-function sanitizeMongoIds(obj) {
-  if (Array.isArray(obj)) {
-    return obj.map(sanitizeMongoIds);
-  } else if (obj && typeof obj === "object") {
-    if (obj.$oid) return obj.$oid;
-    const newObj = {};
-    for (const key in obj) {
-      newObj[key] = sanitizeMongoIds(obj[key]);
-    }
-    return newObj;
-  }
-  return obj;
-}
-
-const recipesRawSanitized = sanitizeMongoIds(recipesDataRaw);
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -42,14 +24,6 @@ module.exports = {
       { type: Sequelize.QueryTypes.SELECT }
     );
 
-    const users = await queryInterface.sequelize.query("SELECT id FROM users", {
-      type: Sequelize.QueryTypes.SELECT,
-    });
-
-    if (users.length === 0) {
-      throw new Error("❌ No users found in the database!");
-    }
-
     const areaMap = Object.fromEntries(
       areas.map((a) => [a.name.toLowerCase().trim(), a.id])
     );
@@ -62,10 +36,9 @@ module.exports = {
     const recipesData = [];
     const recipesMap = [];
 
-    for (const recipe of recipesRawSanitized) {
-      const id = uuidv4(); // 🆕 генерируем валидный UUID
-      const ownerId = users[Math.floor(Math.random() * users.length)].id;
-
+    for (const recipe of recipesDataRaw) {
+      const id = recipe.id;
+      const ownerId = recipe.owner;
       const areaId = recipe.area
         ? areaMap[recipe.area.toLowerCase().trim()] || null
         : null;
@@ -78,7 +51,7 @@ module.exports = {
         continue;
       }
 
-      let thumb = `${baseUrl}/public/images/recipies/default.png`;
+      let thumb = null;
 
       if (recipe.thumb) {
         try {
@@ -103,7 +76,10 @@ module.exports = {
           thumb = `${baseUrl}/public/images/recipies/${sanitized}`;
         } catch (e) {
           console.warn(`⚠️ Could not download image: ${recipe.thumb}`);
+          thumb = `${baseUrl}/public/images/recipies/default.png`;
         }
+      } else {
+        thumb = `${baseUrl}/public/images/recipies/default.png`;
       }
 
       recipesMap.push({ title: recipe.title.trim(), newId: id });
@@ -147,10 +123,11 @@ module.exports = {
     for (const file of files) {
       if (file !== "default.png") {
         const fullPath = path.join(dir, file);
+        console.log(fullPath);
         try {
           fs.unlinkSync(fullPath);
         } catch (err) {
-          console.warn(`⚠️ Could not delete file: ${fullPath}`, err);
+          console.warn(`Could not delete file: ${fullPath}`, err);
         }
       }
     }

@@ -16,31 +16,49 @@ module.exports = {
     const rawData = await fs.readFile(dataPath, "utf-8");
     const parsed = JSON.parse(rawData);
 
-    const users = parsed;
-    const relationships = { followers: {} };
+    const { users, relationships } = parsed;
 
     const now = new Date();
 
     const hashedUsers = await Promise.all(
       users.map(async (user) => ({
-        id: uuidv4(), // ← обязательно заменить!
+        id: user.id,
         name: user.name,
         email: user.email,
         password: await bcrypt.hash("password123", 10),
         avatarURL:
           user.name === "Foodies Admin"
-            ? `${baseUrl}/public/images/avatars/admin.png`
+            ? `${baseUrl}/public/images/avatars/admin.jpeg`
             : `${baseUrl}/public/images/avatars/default.png`,
-        token: null,
+        token: user.token,
         createdAt: now,
         updatedAt: now,
       }))
     );
 
     await queryInterface.bulkInsert("users", hashedUsers);
+
+    const follows = [];
+    for (const [followedId, followerIds] of Object.entries(
+      relationships.followers
+    )) {
+      followerIds.forEach((followerId) => {
+        follows.push({
+          id: uuidv4(),
+          followerId,
+          followingId: followedId,
+          createdAt: now,
+          updatedAt: now,
+        });
+      });
+    }
+    if (follows.length > 0) {
+      await queryInterface.bulkInsert("follows", follows);
+    }
   },
 
   async down(queryInterface) {
+    await queryInterface.bulkDelete("follows", null, {});
     await queryInterface.bulkDelete("users", null, {});
   },
 };

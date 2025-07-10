@@ -1,9 +1,4 @@
-import Joi from 'joi';
-
-export const paginationSchema = Joi.object({
-  page: Joi.number().integer().min(1).default(1),
-  limit: Joi.number().integer().min(1).default(10)
-});
+import Joi from "joi";
 
 export const createRecipeSchema = Joi.object({
   title: Joi.string().min(1).required(),
