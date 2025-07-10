@@ -1,107 +1,76 @@
-[
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f8a"
-    },
-    "name": "Seafood",
-    "description": "Enjoy the flavors of the sea with dishes featuring shrimp, fish, squid, and more. Perfect for light and elegant meals."
+[{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f8a"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f8b"
-    },
-    "name": "Lamb",
-    "description": "Delicious and aromatic lamb recipes, ideal for special occasions or when you want something hearty and rich."
+  "name": "Seafood"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f8b"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f8c"
-    },
-    "name": "Starter",
-    "description": "Appetizers and small bites to whet your appetite before the main course."
+  "name": "Lamb"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f8c"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f8d"
-    },
-    "name": "Chicken",
-    "description": "Versatile and juicy chicken recipes for every occasion, from simple dinners to exotic creations."
+  "name": "Starter"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f8d"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f8e"
-    },
-    "name": "Beef",
-    "description": "Hearty and satisfying beef dishes\u2014stir-fried, grilled, roasted, or stewed."
+  "name": "Chicken"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f8e"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f8f"
-    },
-    "name": "Dessert",
-    "description": "End your meal on a sweet note with cakes, cookies, puddings, and other delightful desserts."
+  "name": "Beef"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f8f"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f90"
-    },
-    "name": "Vegan",
-    "description": "Plant-based recipes made without any animal products\u2014healthy, ethical, and full of flavor."
+  "name": "Dessert"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f90"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f91"
-    },
-    "name": "Pork",
-    "description": "Flavorful recipes featuring pork\u2014great for roasts, stir-fries, and comfort food classics."
+  "name": "Vegan"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f91"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f92"
-    },
-    "name": "Vegetarian",
-    "description": "Tasty and filling recipes without meat, ideal for vegetarians or meat-free days."
+  "name": "Pork"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f92"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f93"
-    },
-    "name": "Miscellaneous",
-    "description": "Unique and creative recipes that don't fit into specific categories\u2014perfect for exploration."
+  "name": "Vegetarian"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f93"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f94"
-    },
-    "name": "Pasta",
-    "description": "Classic and modern pasta recipes from around the world\u2014rich, creamy, spicy, or simple."
+  "name": "Miscellaneous"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f94"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f95"
-    },
-    "name": "Breakfast",
-    "description": "Start your day right with energizing breakfast ideas\u2014omelets, porridge, pancakes, and more."
+  "name": "Pasta"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f95"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f96"
-    },
-    "name": "Side",
-    "description": "Delicious side dishes to complement your main meal\u2014vegetables, grains, and beyond."
+  "name": "Breakfast"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f96"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f97"
-    },
-    "name": "Goat",
-    "description": "Distinctive recipes made with goat meat, often used in traditional or festive cuisine."
+  "name": "Side"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f97"
   },
-  {
-    "_id": {
-      "$oid": "6462a6cd4c3d0ddd28897f98"
-    },
-    "name": "Soup",
-    "description": "Warm up with soups of all kinds\u2014from broths to creamy blends, perfect year-round."
-  }
-]
+  "name": "Goat"
+},{
+  "_id": {
+    "$oid": "6462a6cd4c3d0ddd28897f98"
+  },
+  "name": "Soup"
+}]

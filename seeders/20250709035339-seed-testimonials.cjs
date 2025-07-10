@@ -1,21 +1,14 @@
 "use strict";
 
-const testimonialsRaw = require("../db/source/testimonials.json");
+const testimonials = require("../db/source/testimonials.json");
 const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    const now = new Date();
-
-    const testimonialsData = testimonialsRaw.map((testimonial) => ({
+  async up(queryInterface) {
+    const testimonialsData = testimonials.map((testimonial) => ({
       id: uuidv4(),
       testimonial: testimonial.testimonial,
-      ownerId:
-        typeof testimonial.owner === "object" && testimonial.owner.$oid
-          ? testimonial.owner.$oid
-          : testimonial.owner,
-      createdAt: now,
-      updatedAt: now,
+      owner: testimonial.owner,
     }));
 
     await queryInterface.bulkInsert("testimonials", testimonialsData, {});

@@ -2,7 +2,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db/sequelize.js";
 import Area from "./Area.js";
-import User from "./User.js"; // 🔥 подключаем модель областей
+import User from "./User.js";
 
 const Recipe = sequelize.define(
   "Recipe",
