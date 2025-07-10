@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
 import Recipe from '../models/Recipe.js';
+import HttpError from '../helpers/HttpError.js';
 
 export async function searchRecipes({ category, area, page = 1, limit = 10 }) {
   const filter = {};
@@ -21,9 +22,7 @@ export async function searchRecipes({ category, area, page = 1, limit = 10 }) {
 export async function getRecipeById(id) {
   const recipe = await Recipe.findByPk(id);
   if (!recipe) {
-    const error = new Error('Recipe not found');
-    error.status = 404;
-    throw error;
+    throw HttpError(404, 'Recipe not found');
   }
   return recipe;
 }
@@ -50,14 +49,10 @@ export async function createRecipe(data, ownerId) {
 export async function deleteRecipe(id, ownerId) {
   const recipe = await Recipe.findByPk(id);
   if (!recipe) {
-    const error = new Error('Recipe not found');
-    error.status = 404;
-    throw error;
+    throw HttpError(404, 'Recipe not found');
   }
   if (recipe.ownerId !== ownerId) {
-    const error = new Error('Not authorized to delete this recipe');
-    error.status = 403;
-    throw error;
+    throw HttpError(403, 'Not authorized to delete this recipe');
   }
   await recipe.destroy();
   return;
@@ -77,11 +72,11 @@ export async function getRecipesByOwner(ownerId, { page = 1, limit = 10 }) {
 }
 // The following are not supported by the model and are left as stubs
 export async function addFavorite() {
-  throw new Error('Favorites not supported by this model');
+  throw HttpError(501, 'Favorites not supported by this model');
 }
 export async function removeFavorite() {
-  throw new Error('Favorites not supported by this model');
+  throw HttpError(501, 'Favorites not supported by this model');
 }
 export async function getFavoriteRecipes() {
-  throw new Error('Favorites not supported by this model');
+  throw HttpError(501, 'Favorites not supported by this model');
 }

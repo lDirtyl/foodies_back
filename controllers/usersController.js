@@ -1,18 +1,19 @@
 import * as userService from '../services/userSevice.js';
 import controllerWrapper from '../helpers/controllerWrapper.js';
 import HttpError from '../helpers/HttpError.js';
+import { registerUserSchema, loginUserSchema } from '../schemas/userSchema.js';
 
 const register = async (req, res, next) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) throw HttpError(400, 'Name, email and password are required');
-  const result = await userService.registerUser({ name, email, password });
+  const { error, value } = registerUserSchema.validate(req.body);
+  if (error) throw HttpError(400, error.message);
+  const result = await userService.registerUser(value);
   res.status(201).json(result);
 };
 
 const login = async (req, res, next) => {
-  const { email, password } = req.body;
-  if (!email || !password) throw HttpError(400, 'Email and password are required');
-  const result = await userService.loginUser({ email, password });
+  const { error, value } = loginUserSchema.validate(req.body);
+  if (error) throw HttpError(400, error.message);
+  const result = await userService.loginUser(value);
   res.json(result);
 };
 

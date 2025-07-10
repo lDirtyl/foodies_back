@@ -2,14 +2,13 @@ import * as recipeService from '../services/recipeService.js';
 import controllerWrapper from '../helpers/controllerWrapper.js';
 import HttpError from '../helpers/HttpError.js';
 import { validate as isUuid } from 'uuid';
+import { paginationSchema, createRecipeSchema } from '../schemas/recipeSchema.js';
 
 const searchRecipes = async (req, res, next) => {
-  let { category, ingredient, area, page, limit } = req.query;
-  page = Number(page);
-  limit = Number(limit);
-  if (!page || isNaN(page) || page < 1) page = 1;
-  if (!limit || isNaN(limit) || limit < 1) limit = 10;
-  const result = await recipeService.searchRecipes({ category, ingredient, area, page: Number(page), limit: Number(limit) });
+  const { error, value } = paginationSchema.validate(req.query);
+  if (error) throw HttpError(400, error.message);
+  const { category, ingredient, area, page, limit } = { ...req.query, ...value };
+  const result = await recipeService.searchRecipes({ category, ingredient, area, page, limit });
   res.json(result);
 };
 
@@ -22,22 +21,19 @@ const getRecipeById = async (req, res, next) => {
 };
 
 const getPopularRecipes = async (req, res, next) => {
-  let { page, limit } = req.query;
-  page = Number(page);
-  limit = Number(limit);
-  if (!page || isNaN(page) || page < 1) page = 1;
-  if (!limit || isNaN(limit) || limit < 1) limit = 10;
-  const result = await recipeService.getPopularRecipes({ page: Number(page), limit: Number(limit) });
+  const { error, value } = paginationSchema.validate(req.query);
+  if (error) throw HttpError(400, error.message);
+  const { page, limit } = value;
+  const result = await recipeService.getPopularRecipes({ page, limit });
   res.json(result);
 };
-
 
 // Private routes
 const createRecipe = async (req, res, next) => {
   const ownerId = req.user.id;
-  const data = req.body;
-  if (!data.title) throw HttpError(400, 'Title is required');
-  const recipe = await recipeService.createRecipe(data, ownerId);
+  const { error, value } = createRecipeSchema.validate(req.body);
+  if (error) throw HttpError(400, error.message);
+  const recipe = await recipeService.createRecipe(value, ownerId);
   res.status(201).json(recipe);
 };
 
@@ -53,11 +49,9 @@ const deleteRecipe = async (req, res, next) => {
 
 const getOwnRecipes = async (req, res, next) => {
   const ownerId = req.user.id;
-  let { page, limit } = req.query;
-  page = Number(page);
-  limit = Number(limit);
-  if (!page || isNaN(page) || page < 1) page = 1;
-  if (!limit || isNaN(limit) || limit < 1) limit = 10;
+  const { error, value } = paginationSchema.validate(req.query);
+  if (error) throw HttpError(400, error.message);
+  const { page, limit } = value;
   const result = await recipeService.getRecipesByOwner(ownerId, { page, limit });
   res.json(result);
 };
