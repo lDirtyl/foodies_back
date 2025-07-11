@@ -8,7 +8,8 @@ import {
     getFollowersWrapper,
     getFollowingsWrapper,
     followUserWrapper,
-    unfollowUserWrapper
+    unfollowUserWrapper,
+    getUserDetailsWrapper
 } from '../controllers/usersController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import { upload, resizeAvatar } from '../middlewares/uploadMiddleware.js';
@@ -30,6 +31,7 @@ router.get("/followers", authMiddleware, getFollowersWrapper);
 router.get("/followings", authMiddleware, getFollowingsWrapper);
 router.post("/follow", authMiddleware, followUserWrapper);
 router.delete("/follow", authMiddleware, unfollowUserWrapper);
+router.get("/:userId/details", authMiddleware, getUserDetailsWrapper);
 
 
 export default router;

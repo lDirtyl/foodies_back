@@ -74,6 +74,15 @@ const unfollowUser = async (req, res) => {
   res.status(200).json(result);
 };
 
+const getUserDetails = async (req, res) => {
+  const currentUserId = req.user.id;
+  const targetUserId = req.params.userId;
+
+  const userDetails = await userService.getUserDetails(currentUserId, targetUserId);
+  res.status(200).json(userDetails);
+};
+
+export const getUserDetailsWrapper = controllerWrapper(getUserDetails);
 export const unfollowUserWrapper = controllerWrapper(unfollowUser);
 export const followUserWrapper = controllerWrapper(followUser);
 export const getFollowingsWrapper = controllerWrapper(getFollowings);

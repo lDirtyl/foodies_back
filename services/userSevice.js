@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import gravatar from 'gravatar';
 import Follow from "../models/follow.js";
+import Recipe from "../models/Recipe.js";
+import Favorite from "../models/favorite.js";
 
 export async function registerUser({ name, email, password }) {
   const existingUser = await User.findOne({ where: { email } });
@@ -132,4 +134,44 @@ export async function unfollowUser(followerId, followingId) {
 
   await follow.destroy();
   return { message: "Unfollowed successfully" };
+}
+
+export async function getUserDetails(currentUserId, targetUserId) {
+  // Отримуємо інформацію про користувача
+  const user = await User.findByPk(targetUserId, {
+    attributes: ["id", "name", "email", "avatarURL"],
+  });
+
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  // Обчислюємо кількості
+  const recipesCount = await Recipe.count({ where: { ownerId: targetUserId } });
+  const followersCount = await Follow.count({ where: { followingId: targetUserId } });
+
+  // Якщо запитуємо себе, додаємо додаткові поля
+  if (currentUserId === targetUserId) {
+    const followingsCount = await Follow.count({ where: { followerId: currentUserId } });
+    const favoritesCount = await Favorite.count({ where: { userId: currentUserId } });
+
+    return {
+      user,
+      details: {
+        recipesCount,
+        favoritesCount,
+        followersCount,
+        followingsCount,
+      },
+    };
+  }
+
+  // Якщо запитуємо інформацію про іншого користувача
+  return {
+    user,
+    details: {
+      recipesCount,
+      followersCount,
+    },
+  };
 }
