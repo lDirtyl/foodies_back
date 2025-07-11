@@ -23,6 +23,7 @@ export async function registerUser({ name, email, password }) {
 
   return {
     user: {
+      id: newUser.id,
       name: newUser.name,
       email: newUser.email,
       avatarURL: newUser.avatarURL
@@ -44,6 +45,7 @@ export async function loginUser({ email, password }) {
   return {
     token,
     user: {
+      id: user.id,
       name: user.name,
       email: user.email,
       avatarURL: user.avatarURL
