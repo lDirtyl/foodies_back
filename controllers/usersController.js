@@ -7,14 +7,30 @@ const register = async (req, res, next) => {
   const { error, value } = registerUserSchema.validate(req.body);
   if (error) throw HttpError(400, error.message);
   const result = await userService.registerUser(value);
-  res.status(201).json(result);
+
+  // Встановлюємо токен у cookie
+  res.cookie('token', result.token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+
+  res.status(201).json({ name: result.name, email: result.email, avatarURL: result.avatarURL });
 };
 
 const login = async (req, res, next) => {
   const { error, value } = loginUserSchema.validate(req.body);
   if (error) throw HttpError(400, error.message);
   const result = await userService.loginUser(value);
-  res.json(result);
+
+  // Встановлюємо токен у cookie
+  res.cookie('token', result.token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  });
+
+  res.json({ name: result.name, email: result.email, avatarURL: result.avatarURL });
 };
 
 const logout = async (req, res, next) => {

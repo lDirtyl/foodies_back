@@ -3,12 +3,20 @@ import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import User from "../models/User.js";
 import "dotenv/config";
 
-
 const secret = process.env.JWT_SECRET;
+
+// Кастомна функція для отримання токена з cookie або з Authorization header
+function extractToken(req) {
+  if (req && req.cookies && req.cookies.token) {
+    return req.cookies.token;
+  }
+  // Якщо немає cookie — пробуємо з Authorization header
+  return ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+}
 
 const params = {
   secretOrKey: secret,
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest: extractToken,
   passReqToCallback: true,
 };
 
@@ -16,7 +24,7 @@ passport.use(
   new JwtStrategy(params, async (req, payload, done) => {
     try {
       const user = await User.findByPk(payload.id);
-      const incomingToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+      const incomingToken = extractToken(req);
       if (!user || user.token !== incomingToken) {
         return done(null, false);
       }
