@@ -2,365 +2,427 @@
   "openapi": "3.1.0",
   "info": {
     "version": "1.0.0",
-    "title": "Students app",
+    "title": "Foodies app",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "description": "This is a documentation of students app\n"
+    "description": "This is a documentation of foodies app\n"
   },
   "servers": [
     {
       "url": "http://localhost:3000"
-    },
-    {
-      "url": "https://example.com/api/v1"
     }
   ],
   "tags": [
     {
-      "name": "Students",
-      "description": "Operations about students."
+      "name": "Recipes",
+      "description": "Operations about recipes."
     },
     {
-      "name": "Auth",
-      "description": "Auth operations."
+      "name": "Users",
+      "description": "User registration, login, and profile operations."
+    },
+    {
+      "name": "Areas",
+      "description": "Operations about areas."
+    },
+    {
+      "name": "Categories",
+      "description": "Operations about categories."
+    },
+    {
+      "name": "Ingredients",
+      "description": "Operations about ingredients."
+    },
+    {
+      "name": "Testimonials",
+      "description": "Operations about testimonials."
     }
   ],
   "paths": {
-    "/students": {
+    "/api/recipes": {
       "get": {
-        "tags": [
-          "Students"
-        ],
-        "summary": "Get list of students",
-        "operationId": "getStudents",
-        "description": "Get list of users with this endpoint",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "tags": ["Recipes"],
+        "summary": "Search recipes",
+        "operationId": "searchRecipes",
+        "description": "Search recipes with pagination, category, ingredient, area.",
         "parameters": [
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          },
-          {
-            "in": "query",
-            "name": "perPage",
-            "schema": {
-              "type": "integer",
-              "example": 10
-            }
-          },
-          {
-            "in": "query",
-            "name": "sortBy",
-            "schema": {
-              "type": "string",
-              "example": "age"
-            },
-            "description": "All student's fields can be mentioned. Default value - _id"
-          },
-          {
-            "in": "query",
-            "name": "sortOrder",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "asc",
-                "desc"
-              ],
-              "example": "asc"
-            }
-          },
-          {
-            "in": "query",
-            "name": "minAvgMark",
-            "schema": {
-              "type": "number",
-              "example": 4
-            }
-          },
-          {
-            "in": "query",
-            "name": "maxAvgMark",
-            "schema": {
-              "type": "number",
-              "example": 10
-            }
-          },
-          {
-            "in": "query",
-            "name": "minAge",
-            "schema": {
-              "type": "number",
-              "example": 10
-            }
-          },
-          {
-            "in": "query",
-            "name": "maxAge",
-            "schema": {
-              "type": "number",
-              "example": 16
-            }
-          },
-          {
-            "in": "query",
-            "name": "gender",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "male",
-                "female",
-                "other"
-              ],
-              "example": "male"
-            }
-          }
+          { "in": "query", "name": "category", "schema": { "type": "string" } },
+          { "in": "query", "name": "ingredient", "schema": { "type": "string" } },
+          { "in": "query", "name": "area", "schema": { "type": "string" } },
+          { "in": "query", "name": "page", "schema": { "type": "integer" }, "example": 1 },
+          { "in": "query", "name": "limit", "schema": { "type": "integer" }, "example": 10 }
         ],
         "responses": {
           "200": {
-            "description": "Successfully found students!",
+            "description": "List of recipes",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message",
-                    "data"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Successfully found students!"
-                    },
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "data",
-                        "page",
-                        "perPage",
-                        "totalItems",
-                        "totalPages",
-                        "hasNextPage",
-                        "hasPreviousPage"
-                      ],
-                      "properties": {
-                        "data": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/student"
-                          }
-                        },
-                        "page": {
-                          "type": "number",
-                          "example": 2
-                        },
-                        "perPage": {
-                          "type": "number",
-                          "example": 4
-                        },
-                        "totalItems": {
-                          "type": "number",
-                          "example": 4
-                        },
-                        "totalPages": {
-                          "type": "number",
-                          "example": 4
-                        },
-                        "hasNextPage": {
-                          "type": "boolean",
-                          "example": false
-                        },
-                        "hasPreviousPage": {
-                          "type": "boolean",
-                          "example": true
-                        }
-                      }
-                    }
-                  }
-                }
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Recipe" } }
               }
             }
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
           }
         }
       },
       "post": {
-        "tags": [
-          "Students"
-        ],
-        "summary": "Create student",
-        "operationId": "createStudent",
-        "description": "Create a student with payload",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "tags": ["Recipes"],
+        "summary": "Create recipe",
+        "operationId": "createRecipe",
+        "description": "Create a new recipe.",
+        "security": [ { "bearerAuth": [] } ],
         "requestBody": {
           "content": {
-            "multipart/form-data": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Recipe" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recipe created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Recipe" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/recipes/popular": {
+      "get": {
+        "tags": ["Recipes"],
+        "summary": "Get popular recipes",
+        "operationId": "getPopularRecipes",
+        "description": "Get recipes sorted by number of favorites.",
+        "parameters": [
+          { "in": "query", "name": "page", "schema": { "type": "integer" }, "example": 1 },
+          { "in": "query", "name": "limit", "schema": { "type": "integer" }, "example": 10 }
+        ],
+        "responses": {
+          "200": {
+            "description": "Popular recipes",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Recipe" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recipes/{id}": {
+      "get": {
+        "tags": ["Recipes"],
+        "summary": "Get recipe by id",
+        "operationId": "getRecipeById",
+        "description": "Get recipe details by id.",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipe details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Recipe" }
+              }
+            }
+          },
+          "404": { "description": "Recipe not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Recipes"],
+        "summary": "Delete recipe",
+        "operationId": "deleteRecipe",
+        "description": "Delete a recipe by id (owner only).",
+        "security": [ { "bearerAuth": [] } ],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "204": { "description": "Recipe deleted" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Recipe not found" }
+        }
+      }
+    },
+    "/api/recipes/own": {
+      "get": {
+        "tags": ["Recipes"],
+        "summary": "Get own recipes",
+        "operationId": "getOwnRecipes",
+        "description": "Get recipes created by the current user.",
+        "security": [ { "bearerAuth": [] } ],
+        "parameters": [
+          { "in": "query", "name": "page", "schema": { "type": "integer" }, "example": 1 },
+          { "in": "query", "name": "limit", "schema": { "type": "integer" }, "example": 10 }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of own recipes",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Recipe" } }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/recipes/{id}/favorite": {
+      "post": {
+        "tags": ["Recipes"],
+        "summary": "Add recipe to favorites",
+        "operationId": "addFavorite",
+        "description": "Add a recipe to user's favorites.",
+        "security": [ { "bearerAuth": [] } ],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Recipe added to favorites" },
+          "404": { "description": "Recipe not found" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      },
+      "delete": {
+        "tags": ["Recipes"],
+        "summary": "Remove recipe from favorites",
+        "operationId": "removeFavorite",
+        "description": "Remove a recipe from user's favorites.",
+        "security": [ { "bearerAuth": [] } ],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Recipe removed from favorites" },
+          "404": { "description": "Recipe not found" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/recipes/favorites": {
+      "get": {
+        "tags": ["Recipes"],
+        "summary": "Get favorite recipes",
+        "operationId": "getFavoriteRecipes",
+        "description": "Get all recipes favorited by the current user.",
+        "security": [ { "bearerAuth": [] } ],
+        "parameters": [
+          { "in": "query", "name": "page", "schema": { "type": "integer" }, "example": 1 },
+          { "in": "query", "name": "limit", "schema": { "type": "integer" }, "example": 10 }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of favorite recipes",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Recipe" } }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/users/register": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Register user",
+        "operationId": "registerUser",
+        "description": "Register a new user.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Login user",
+        "operationId": "loginUser",
+        "description": "Login user and get JWT token.",
+        "requestBody": {
+          "content": {
+            "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name",
-                  "age",
-                  "gender",
-                  "avgMark",
-                  "parentId"
-                ],
                 "properties": {
-                  "name": {
-                    "description": "Student's name",
-                    "type": "string",
-                    "example": "John Doe"
-                  },
-                  "age": {
-                    "description": "Student's age",
-                    "type": "number",
-                    "example": 12
-                  },
-                  "gender": {
-                    "description": "Student's age",
-                    "type": "string",
-                    "enum": [
-                      "male",
-                      "female",
-                      "other"
-                    ]
-                  },
-                  "avgMark": {
-                    "description": "Student's average mark. Should be between 1 and 12",
-                    "type": "number",
-                    "example": 9.7
-                  },
-                  "onDuty": {
-                    "description": "Whether is student on duty",
-                    "type": "boolean",
-                    "example": false
-                  },
-                  "parentId": {
-                    "description": "Student's parent id",
-                    "type": "string",
-                    "example": "65e4decdd286b30065d54af9"
-                  },
-                  "photo": {
-                    "description": "Student''s photo",
-                    "type": "string",
-                    "format": "binary"
-                  }
+                  "email": { "type": "string", "example": "user@example.com" },
+                  "password": { "type": "string", "example": "password123" }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Creates a student",
+          "200": {
+            "description": "User logged in",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "status",
-                    "message",
-                    "data"
-                  ],
                   "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Successfully created a student!"
-                    },
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/student"
-                    }
+                    "token": { "type": "string", "example": "jwt-token" },
+                    "user": { "$ref": "#/components/schemas/User" }
                   }
                 }
               }
             }
           },
-          "401": {
-            "$ref": "#/components/responses/401"
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/users/logout": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Logout user",
+        "operationId": "logoutUser",
+        "description": "Logout current user.",
+        "security": [ { "bearerAuth": [] } ],
+        "responses": {
+          "204": { "description": "User logged out" },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get current user",
+        "operationId": "getCurrentUser",
+        "description": "Get current logged-in user info.",
+        "security": [ { "bearerAuth": [] } ],
+        "responses": {
+          "200": {
+            "description": "Current user info",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/areas": {
+      "get": {
+        "tags": [
+          "Areas"
+        ],
+        "summary": "Get all areas",
+        "operationId": "getAreas",
+        "description": "Get a list of all areas.",
+        "responses": {
+          "200": {
+            "description": "List of areas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Area"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
-    "/students/{id}": {
+    "/api/categories": {
       "get": {
         "tags": [
-          "Students"
+          "Categories"
         ],
-        "summary": "Get student by id",
-        "operationId": "getStudent",
-        "description": "Get student by id",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "65ca67e7ae7f10c88b598384"
-            }
-          }
-        ],
+        "summary": "Get all categories",
+        "operationId": "getCategories",
+        "description": "Get a list of all categories.",
         "responses": {
           "200": {
-            "description": "Get student by id",
+            "description": "List of categories",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message",
-                    "data"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Successfully found student with id 65ca67e7ae7f10c88b598384!"
-                    },
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/student"
-                    }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
                   }
                 }
               }
             }
-          },
-          "401": {
-            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/api/ingredients": {
+      "get": {
+        "tags": [
+          "Ingredients"
+        ],
+        "summary": "Get all ingredients",
+        "operationId": "getIngredients",
+        "description": "Get a list of all ingredients.",
+        "responses": {
+          "200": {
+            "description": "List of ingredients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ingredient"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/testimonials": {
+      "get": {
+        "tags": [
+          "Testimonials"
+        ],
+        "summary": "Get all testimonials",
+        "operationId": "getTestimonials",
+        "description": "Get a list of all testimonials.",
+        "responses": {
+          "200": {
+            "description": "List of testimonials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Testimonial"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -374,60 +436,99 @@
       }
     },
     "schemas": {
-      "student": {
+      "Recipe": {
+        "type": "object",
+        "required": ["id", "title", "description", "ingredients", "instructions", "authorId"],
+        "properties": {
+          "id": { "type": "string", "example": "123" },
+          "title": { "type": "string", "example": "Chicken Soup" },
+          "description": { "type": "string", "example": "A tasty chicken soup recipe." },
+          "ingredients": { "type": "array", "items": { "type": "string" }, "example": ["chicken", "water", "salt"] },
+          "instructions": { "type": "string", "example": "Boil chicken, add salt, simmer." },
+          "authorId": { "type": "string", "example": "user123" },
+          "favoritesCount": { "type": "integer", "example": 10 }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": ["id", "email", "name"],
+        "properties": {
+          "id": { "type": "string", "example": "user123" },
+          "email": { "type": "string", "example": "user@example.com" },
+          "name": { "type": "string", "example": "John Doe" },
+          "avatarURL": { "type": "string", "example": "https://example.com/avatar.jpg" }
+        }
+      },
+      "Area": {
         "type": "object",
         "required": [
-          "_id",
-          "name",
-          "age",
-          "gender",
-          "avgMark",
-          "onDuty"
+          "id",
+          "name"
         ],
         "properties": {
-          "_id": {
-            "description": "Student's id",
+          "id": {
             "type": "string",
-            "example": "65e4decdd286b30065d54af9"
+            "example": "area123"
           },
           "name": {
-            "description": "Student's name",
             "type": "string",
-            "example": "John Doe"
-          },
-          "age": {
-            "description": "Student's age",
-            "type": "number",
-            "example": 12
-          },
-          "gender": {
-            "description": "Student's age",
+            "example": "Europe"
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
             "type": "string",
-            "enum": [
-              "male",
-              "female",
-              "other"
-            ]
+            "example": "cat123"
           },
-          "avgMark": {
-            "description": "Student's average mark. Should be between 1 and 12",
-            "type": "number",
-            "example": 9.7
-          },
-          "onDuty": {
-            "description": "Whether is student on duty",
-            "type": "boolean",
-            "example": false
-          },
-          "parentId": {
-            "description": "Student's parent id",
+          "name": {
             "type": "string",
-            "example": "65e4decdd286b30065d54af9"
-          },
-          "photo": {
-            "description": "Link to student's photo",
+            "example": "Dessert"
+          }
+        }
+      },
+      "Ingredient": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
             "type": "string",
-            "example": "<https://res.cloudinary.com/uqwgdu/image/upload/image.png>"
+            "example": "ing123"
+          },
+          "name": {
+            "type": "string",
+            "example": "Sugar"
+          }
+        }
+      },
+      "Testimonial": {
+        "type": "object",
+        "required": [
+          "id",
+          "author",
+          "text"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "test123"
+          },
+          "author": {
+            "type": "string",
+            "example": "Jane Doe"
+          },
+          "text": {
+            "type": "string",
+            "example": "Great recipes!"
           }
         }
       }
