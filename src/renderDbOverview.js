@@ -1,6 +1,9 @@
 // src/renderDbOverview.js
 // Функція для отримання структури БД та формування HTML-розмітки
 
+import renderCategoriesBlock from "./renderCategoriesBlock.js";
+import renderUserBlock from "./renderUserBlock.js";
+
 async function renderDbOverview({ sequelize }) {
   // Динамічно імпортуємо моделі (уникаємо циклічних залежностей)
   const { User, Recipe } = await import("../models/index.js");
@@ -8,6 +11,11 @@ async function renderDbOverview({ sequelize }) {
   const users = await User.findAll({ attributes: ["name"] });
   const userNames = users.map(u => u.name).join(", ");
   const recipeCount = await Recipe.count();
+
+  // Нові блоки
+  const categoriesBlock = await renderCategoriesBlock({ sequelize });
+  const userBlock = await renderUserBlock();
+
   // Отримання списку таблиць через Sequelize
   const tableNames = await sequelize.getQueryInterface().showAllTables();
   let tablesMarkup = '';
@@ -54,7 +62,9 @@ async function renderDbOverview({ sequelize }) {
         <h2 style="color:#4caf50;">база завантажена з render</h2>
         <p><b>юзерів у базі:</b> ${userCount}</p>
         <p style="margin:0 0 16px 0;"><small>${userNames}</small></p>
+        ${userBlock}
         <p><b>рецептів у базі:</b> ${recipeCount}</p>
+        ${categoriesBlock}
         <p><b>існуючі таблиці на рендер:</b></p>
         ${tablesMarkup}
       </div>

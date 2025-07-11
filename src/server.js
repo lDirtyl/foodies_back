@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { swaggerDocs } from "./middlewares/swaggerDocs.js";
 import sequelize from "../db/sequelize.js";
@@ -17,7 +18,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const UPLOAD_DIR = "public/images";
 
-app.use(cors());
+// Дозволяємо cookie + credentials для фронта
+app.use(cors({
+  origin: "http://localhost:3000", // якщо фронт на іншому порту — вкажи його тут
+  credentials: true
+}));
+app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
 
