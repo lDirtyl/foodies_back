@@ -1,30 +1,76 @@
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: Students app
+  title: Foodies app
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   description: >
-    This is a documentation of students app
+    This is a documentation of Foodies app
 tags:
-  - name: Students
-    description: Operations about students.
-  - name: Auth
-    description: Auth operations.
+  - name: Recipes
+    description: Operations about recipes.
+  - name: Users
+    description: User registration, login, and profile operations.
+  - name: Areas
+    description: Operations about areas.
+  - name: Categories
+    description: Operations about categories.
+  - name: Ingredients
+    description: Operations about ingredients.
+  - name: Testimonials
+    description: Operations about testimonials.
 servers:
   - url: http://localhost:3000
-  - url: https://example.com/api/v1
 paths:
-  /students:
+  /api/recipes:
     get:
-      $ref: ../swagger/paths/students/get.yaml
+      $ref: ../swagger/paths/recipes/get.yaml
     post:
-      $ref: ../swagger/paths/students/post.yaml
-
-  /students/{id}:
+      $ref: ../swagger/paths/recipes/post.yaml
+  /api/recipes/popular:
     get:
-      $ref: ../swagger/paths/students/{id}/get.yaml
+      $ref: ../swagger/paths/recipes/popular/get.yaml
+  /api/recipes/{id}:
+    get:
+      $ref: ../swagger/paths/recipes/{id}/get.yaml
+    delete:
+      $ref: ../swagger/paths/recipes/{id}/delete.yaml
+  /api/recipes/own:
+    get:
+      $ref: ../swagger/paths/recipes/own/get.yaml
+  /api/recipes/{id}/favorite:
+    post:
+      $ref: ../swagger/paths/recipes/{id}/favorite/post.yaml
+    delete:
+      $ref: ../swagger/paths/recipes/{id}/favorite/delete.yaml
+  /api/recipes/favorites:
+    get:
+      $ref: ../swagger/paths/recipes/favorites/get.yaml
+  /api/users/register:
+    post:
+      $ref: ../swagger/paths/users/register/post.yaml
+  /api/users/login:
+    post:
+      $ref: ../swagger/paths/users/login/post.yaml
+  /api/users/logout:
+    post:
+      $ref: ../swagger/paths/users/logout/post.yaml
+  /api/users/me:
+    get:
+      $ref: ../swagger/paths/users/me/get.yaml
+  /api/areas:
+    get:
+      $ref: ../swagger/paths/areas/get.yaml
+  /api/categories:
+    get:
+      $ref: ../swagger/paths/categories/get.yaml
+  /api/ingredients:
+    get:
+      $ref: ../swagger/paths/ingredients/get.yaml
+  /api/testimonials:
+    get:
+      $ref: ../swagger/paths/testimonials/get.yaml
 components:
   securitySchemes:
     bearerAuth:
