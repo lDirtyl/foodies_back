@@ -63,3 +63,21 @@ export const updateAvatar = async (userId, avatarURL) => {
 
   return { avatarURL };
 };
+
+export async function getFollowers(userId) {
+  const user = await User.findByPk(userId, {
+    include: [
+      {
+        model: User,
+        as: "followers",
+        attributes: ["id", "name", "email", "avatarURL"],
+      },
+    ],
+  });
+
+  if (!user || !user.followers || user.followers.length === 0) {
+    return [];
+  }
+
+  return user.followers;
+}

@@ -37,6 +37,14 @@ const updateAvatar = async (req, res) => {
   res.json(result);
 };
 
+const getFollowers = async (req, res) => {
+  const userId = req.user.id;
+  const followers = await userService.getFollowers(userId);
+  res.status(200).json({ followers });
+  res.json({ followers });
+};
+
+export const getFollowersWrapper = controllerWrapper(getFollowers);
 export const updateAvatarWrapper = controllerWrapper(updateAvatar);
 export const registerWrapper = controllerWrapper(register);
 export const loginWrapper = controllerWrapper(login);
