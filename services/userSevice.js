@@ -54,3 +54,12 @@ export async function logoutUser(userId) {
   user.token = null;
   await user.save();
 }
+
+export const updateAvatar = async (userId, avatarURL) => {
+  const user = await User.findByPk(userId);
+  if (!user) throw HttpError(404, 'Користувача не знайдено');
+
+  await user.update({ avatarURL });
+
+  return { avatarURL };
+};

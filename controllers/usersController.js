@@ -28,6 +28,16 @@ const getCurrentUser = async (req, res) => {
   res.json({ name, email, avatarURL });
 };
 
+const updateAvatar = async (req, res) => {
+  if (!req.file) throw HttpError(400, 'Файл не завантажено');
+
+  const avatarURL = `/uploads/avatars/${req.file.filename}`;
+  const result = await userService.updateAvatar(req.user.id, avatarURL);
+
+  res.json(result);
+};
+
+export const updateAvatarWrapper = controllerWrapper(updateAvatar);
 export const registerWrapper = controllerWrapper(register);
 export const loginWrapper = controllerWrapper(login);
 export const logoutWrapper = controllerWrapper(logout);

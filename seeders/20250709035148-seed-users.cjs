@@ -26,10 +26,10 @@ module.exports = {
         name: user.name,
         email: user.email,
         password: await bcrypt.hash("password123", 10),
-        avatarURL:
-          user.name === "Foodies Admin"
-            ? `${baseUrl}/public/images/avatars/admin.jpeg`
-            : `${baseUrl}/public/images/avatars/default.png`,
+          avatarURL:
+              user.name === "Foodies Admin"
+                  ? `${baseUrl}/uploads/avatars/admin.jpeg`
+                  : `${baseUrl}/uploads/avatars/default.png`,
         token: user.token,
         createdAt: now,
         updatedAt: now,
