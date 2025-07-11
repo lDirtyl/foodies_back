@@ -307,7 +307,7 @@
         }
       }
     },
-    "/api/users/me": {
+    "/api/users/current": {
       "get": {
         "tags": ["Users"],
         "summary": "Get current user",
@@ -327,6 +327,221 @@
         }
       }
     },
+    "/api/users/avatars": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update user avatar",
+        "operationId": "updateAvatar",
+        "description": "Update current user's avatar image.",
+        "security": [ { "bearerAuth": [] } ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Avatar image file"
+                  }
+                },
+                "required": ["avatar"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - file not uploaded"
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/users/followers": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user followers",
+        "operationId": "getFollowers",
+        "description": "Get list of users following the current user.",
+        "security": [ { "bearerAuth": [] } ],
+        "responses": {
+          "200": {
+            "description": "List of followers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "followers": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/User" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/users/followings": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user followings",
+        "operationId": "getFollowings",
+        "description": "Get list of users that the current user is following.",
+        "security": [ { "bearerAuth": [] } ],
+        "responses": {
+          "200": {
+            "description": "List of followings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "followings": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/User" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/users/follow": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Follow a user",
+        "operationId": "followUser",
+        "description": "Follow another user.",
+        "security": [ { "bearerAuth": [] } ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "followingId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the user to follow"
+                  }
+                },
+                "required": ["followingId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User followed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Followed successfully"
+                    },
+                    "follow": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - followingId is required"
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Unfollow a user",
+        "operationId": "unfollowUser",
+        "description": "Unfollow a user.",
+        "security": [ { "bearerAuth": [] } ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "followingId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID of the user to unfollow"
+                  }
+                },
+                "required": ["followingId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User unfollowed successfully"
+          },
+          "400": {
+            "description": "Bad request - followingId is required"
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
+    "/api/users/{userId}/details": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user details",
+        "operationId": "getUserDetails",
+        "description": "Get details of a specific user.",
+        "security": [ { "bearerAuth": [] } ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "ID of the user to get details for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "401": { "$ref": "#/components/responses/401" }
+        }
+      }
+    },
     "/api/areas": {
       "get": {
         "tags": [
@@ -334,20 +549,55 @@
         ],
         "summary": "Get all areas",
         "operationId": "getAreas",
-        "description": "Get a list of all areas.",
+        "description": "Get a list of all areas with pagination.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination",
+            "example": 1
+          },
+          {
+            "in": "query", 
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            },
+            "description": "Number of areas per page",
+            "example": 10
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List of areas",
+            "description": "List of areas with pagination",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Area"
+                  "type": "object",
+                  "properties": {
+                    "areas": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Area"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
                   }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request - validation error"
           }
         }
       }
@@ -359,20 +609,55 @@
         ],
         "summary": "Get all categories",
         "operationId": "getCategories",
-        "description": "Get a list of all categories.",
+        "description": "Get a list of all categories with pagination.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination",
+            "example": 1
+          },
+          {
+            "in": "query", 
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            },
+            "description": "Number of categories per page",
+            "example": 10
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List of categories",
+            "description": "List of categories with pagination",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Category"
+                  "type": "object",
+                  "properties": {
+                    "categories": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Category"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
                   }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request - validation error"
           }
         }
       }
@@ -384,20 +669,64 @@
         ],
         "summary": "Get all ingredients",
         "operationId": "getIngredients",
-        "description": "Get a list of all ingredients.",
+        "description": "Get a list of all ingredients with pagination and optional name search.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination",
+            "example": 1
+          },
+          {
+            "in": "query", 
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            },
+            "description": "Number of ingredients per page",
+            "example": 10
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search ingredients by name (case-insensitive, partial match)",
+            "example": "chicken"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List of ingredients",
+            "description": "List of ingredients with pagination",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Ingredient"
+                  "type": "object",
+                  "properties": {
+                    "ingredients": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Ingredient"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
                   }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request - validation error"
           }
         }
       }
@@ -409,20 +738,55 @@
         ],
         "summary": "Get all testimonials",
         "operationId": "getTestimonials",
-        "description": "Get a list of all testimonials.",
+        "description": "Get a list of all testimonials with pagination.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for pagination",
+            "example": 1
+          },
+          {
+            "in": "query", 
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            },
+            "description": "Number of testimonials per page",
+            "example": 10
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List of testimonials",
+            "description": "List of testimonials with pagination",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Testimonial"
+                  "type": "object",
+                  "properties": {
+                    "testimonials": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Testimonial"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
                   }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request - validation error"
           }
         }
       }
@@ -453,10 +817,47 @@
         "type": "object",
         "required": ["id", "email", "name"],
         "properties": {
-          "id": { "type": "string", "example": "user123" },
-          "email": { "type": "string", "example": "user@example.com" },
-          "name": { "type": "string", "example": "John Doe" },
-          "avatarURL": { "type": "string", "example": "https://example.com/avatar.jpg" }
+          "id": { 
+            "type": "string", 
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000" 
+          },
+          "email": { 
+            "type": "string", 
+            "format": "email",
+            "example": "user@example.com" 
+          },
+          "name": { 
+            "type": "string", 
+            "example": "John Doe" 
+          },
+          "avatarURL": { 
+            "type": "string", 
+            "nullable": true,
+            "description": "URL to user's avatar image",
+            "example": "https://example.com/avatar.jpg" 
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "required": ["page", "limit", "total"],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "limit": {
+            "type": "integer", 
+            "description": "Number of items per page",
+            "example": 10
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 100
+          }
         }
       },
       "Area": {
@@ -468,7 +869,8 @@
         "properties": {
           "id": {
             "type": "string",
-            "example": "area123"
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "name": {
             "type": "string",
@@ -485,11 +887,18 @@
         "properties": {
           "id": {
             "type": "string",
-            "example": "cat123"
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "name": {
             "type": "string",
             "example": "Dessert"
+          },
+          "thumb": {
+            "type": "string",
+            "nullable": true,
+            "description": "Category thumbnail image URL",
+            "example": "https://example.com/category-thumb.jpg"
           }
         }
       },
@@ -502,11 +911,24 @@
         "properties": {
           "id": {
             "type": "string",
-            "example": "ing123"
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "name": {
             "type": "string",
             "example": "Sugar"
+          },
+          "thumb": {
+            "type": "string",
+            "nullable": true,
+            "description": "Ingredient thumbnail image URL",
+            "example": "https://example.com/ingredient-thumb.jpg"
+          },
+          "desc": {
+            "type": "string",
+            "nullable": true,
+            "description": "Ingredient description",
+            "example": "A common sweetener used in baking"
           }
         }
       },
@@ -514,21 +936,25 @@
         "type": "object",
         "required": [
           "id",
-          "author",
-          "text"
+          "testimonial",
+          "owner"
         ],
         "properties": {
           "id": {
             "type": "string",
-            "example": "test123"
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
           },
-          "author": {
+          "testimonial": {
             "type": "string",
-            "example": "Jane Doe"
+            "description": "The testimonial text",
+            "example": "Great recipes! I love this app."
           },
-          "text": {
+          "owner": {
             "type": "string",
-            "example": "Great recipes!"
+            "format": "uuid",
+            "description": "ID of the user who wrote the testimonial",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
           }
         }
       }
