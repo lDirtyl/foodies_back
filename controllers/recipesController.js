@@ -1,9 +1,8 @@
 import * as recipeService from '../services/recipeService.js';
 import controllerWrapper from '../helpers/controllerWrapper.js';
 import HttpError from '../helpers/HttpError.js';
-import { validate as isUuid } from 'uuid';
 import { paginationSchema } from '../schemas/paginationSchema.js';
-import { createRecipeSchema } from '../schemas/recipeSchema.js';
+import { createRecipeSchema, recipeIdSchema } from '../schemas/recipeSchema.js';
 
 const searchRecipes = async (req, res, next) => {
   const { error, value } = paginationSchema.validate(req.query);
@@ -14,8 +13,10 @@ const searchRecipes = async (req, res, next) => {
 };
 
 const getRecipeById = async (req, res, next) => {
+  const { error } = recipeIdSchema.validate(req.params);
+  if (error) throw HttpError(400, error.message);
+  
   const { id } = req.params;
-  if (!isUuid(id)) throw HttpError(400, 'Invalid recipe id format');
   const recipe = await recipeService.getRecipeById(id);
   if (!recipe) throw HttpError(404, 'Recipe not found');
   res.json(recipe);
@@ -39,6 +40,9 @@ const createRecipe = async (req, res, next) => {
 };
 
 const deleteRecipe = async (req, res, next) => {
+  const { error } = recipeIdSchema.validate(req.params);
+  if (error) throw HttpError(400, error.message);
+  
   const { id } = req.params;
   const ownerId = req.user.id;
   const recipe = await recipeService.getRecipeById(id);
@@ -58,6 +62,9 @@ const getOwnRecipes = async (req, res, next) => {
 };
 
 const addFavorite = async (req, res, next) => {
+  const { error } = recipeIdSchema.validate(req.params);
+  if (error) throw HttpError(400, error.message);
+  
   const { id } = req.params;
   const userId = req.user.id;
   const recipe = await recipeService.addFavorite(id, userId);
@@ -66,6 +73,9 @@ const addFavorite = async (req, res, next) => {
 };
 
 const removeFavorite = async (req, res, next) => {
+  const { error } = recipeIdSchema.validate(req.params);
+  if (error) throw HttpError(400, error.message);
+  
   const { id } = req.params;
   const userId = req.user.id;
   const recipe = await recipeService.removeFavorite(id, userId);
@@ -75,8 +85,10 @@ const removeFavorite = async (req, res, next) => {
 
 const getFavoriteRecipes = async (req, res, next) => {
   const userId = req.user.id;
-  const { page, limit } = req.query;
-  const result = await recipeService.getFavoriteRecipes(userId, { page: Number(page), limit: Number(limit) });
+  const { error, value } = paginationSchema.validate(req.query);
+  if (error) throw HttpError(400, error.message);
+  const { page, limit } = value;
+  const result = await recipeService.getFavoriteRecipes(userId, { page, limit });
   res.json(result);
 };
 
