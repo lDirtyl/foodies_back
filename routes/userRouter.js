@@ -7,7 +7,8 @@ import {
     updateAvatarWrapper,
     getFollowersWrapper,
     getFollowingsWrapper,
-    followUserWrapper
+    followUserWrapper,
+    unfollowUserWrapper
 } from '../controllers/usersController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import { upload, resizeAvatar } from '../middlewares/uploadMiddleware.js';
@@ -28,6 +29,7 @@ router.patch(
 router.get("/followers", authMiddleware, getFollowersWrapper);
 router.get("/followings", authMiddleware, getFollowingsWrapper);
 router.post("/follow", authMiddleware, followUserWrapper);
+router.delete("/follow", authMiddleware, unfollowUserWrapper);
 
 
 export default router;

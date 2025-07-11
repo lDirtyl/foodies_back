@@ -62,6 +62,19 @@ const followUser = async (req, res) => {
   res.status(201).json({ message: "Followed successfully", follow });
 };
 
+const unfollowUser = async (req, res) => {
+  const followerId = req.user.id; // ID авторизованого користувача
+  const { followingId } = req.body; // ID користувача, з якого треба зняти підписку
+
+  if (!followingId) {
+    throw HttpError(400, "followingId is required.");
+  }
+
+  const result = await userService.unfollowUser(followerId, followingId);
+  res.status(200).json(result);
+};
+
+export const unfollowUserWrapper = controllerWrapper(unfollowUser);
 export const followUserWrapper = controllerWrapper(followUser);
 export const getFollowingsWrapper = controllerWrapper(getFollowings);
 export const getFollowersWrapper = controllerWrapper(getFollowers);

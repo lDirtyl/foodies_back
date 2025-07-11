@@ -116,3 +116,20 @@ export async function followUser(followerId, followingId) {
 
   return await Follow.create({followerId, followingId});
 }
+
+export async function unfollowUser(followerId, followingId) {
+  if (followerId === followingId) {
+    throw HttpError(400, "You cannot unfollow yourself.");
+  }
+
+  const follow = await Follow.findOne({
+    where: { followerId, followingId },
+  });
+
+  if (!follow) {
+    throw HttpError(404, "You are not following this user.");
+  }
+
+  await follow.destroy();
+  return { message: "Unfollowed successfully" };
+}
