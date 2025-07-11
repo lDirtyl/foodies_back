@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import gravatar from 'gravatar';
 
+
 export async function registerUser({ name, email, password }) {
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) throw HttpError(409, "Email in use");
@@ -80,4 +81,22 @@ export async function getFollowers(userId) {
   }
 
   return user.followers;
+}
+
+export async function getFollowings(userId) {
+  const user = await User.findByPk(userId, {
+    include: [
+      {
+        model: User,
+        as: "followings",
+        attributes: ["id", "name", "email", "avatarURL"],
+      },
+    ],
+  });
+
+  if (!user || !user.followings || user.followings.length === 0) {
+    return [];
+  }
+
+  return user.followings;
 }

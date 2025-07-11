@@ -41,8 +41,15 @@ const getFollowers = async (req, res) => {
   const userId = req.user.id;
   const followers = await userService.getFollowers(userId);
   res.status(200).json({ followers });
-  res.json({ followers });
 };
+
+const getFollowings = async (req, res) => {
+  const userId = req.user.id;
+  const followings = await userService.getFollowings(userId);
+  res.status(200).json({ followings });
+};
+
+export const getFollowingsWrapper = controllerWrapper(getFollowings); // Обгортаємо у `controllerWrapper`
 
 export const getFollowersWrapper = controllerWrapper(getFollowers);
 export const updateAvatarWrapper = controllerWrapper(updateAvatar);
