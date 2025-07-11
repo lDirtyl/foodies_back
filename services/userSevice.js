@@ -139,7 +139,6 @@ export async function unfollowUser(followerId, followingId) {
 }
 
 export async function getUserDetails(currentUserId, targetUserId) {
-  // Отримуємо інформацію про користувача
   const user = await User.findByPk(targetUserId, {
     attributes: ["id", "name", "email", "avatarURL"],
   });
@@ -148,11 +147,9 @@ export async function getUserDetails(currentUserId, targetUserId) {
     throw HttpError(404, "User not found");
   }
 
-  // Обчислюємо кількості
   const recipesCount = await Recipe.count({ where: { ownerId: targetUserId } });
   const followersCount = await Follow.count({ where: { followingId: targetUserId } });
 
-  // Якщо запитуємо себе, додаємо додаткові поля
   if (currentUserId === targetUserId) {
     const followingsCount = await Follow.count({ where: { followerId: currentUserId } });
     const favoritesCount = await Favorite.count({ where: { userId: currentUserId } });
@@ -168,7 +165,6 @@ export async function getUserDetails(currentUserId, targetUserId) {
     };
   }
 
-  // Якщо запитуємо інформацію про іншого користувача
   return {
     user,
     details: {
