@@ -3,7 +3,7 @@ import HttpError from '../helpers/HttpError.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import gravatar from 'gravatar';
-
+import Follow from "../models/follow.js";
 
 export async function registerUser({ name, email, password }) {
   const existingUser = await User.findOne({ where: { email } });
@@ -99,4 +99,20 @@ export async function getFollowings(userId) {
   }
 
   return user.followings;
+}
+
+export async function followUser(followerId, followingId) {
+  if (followerId === followingId) {
+    throw HttpError(400, "You cannot follow yourself.");
+  }
+
+  const existingFollow = await Follow.findOne({
+    where: { followerId, followingId },
+  });
+
+  if (existingFollow) {
+    throw HttpError(400, "You are already following this user.");
+  }
+
+  return await Follow.create({followerId, followingId});
 }

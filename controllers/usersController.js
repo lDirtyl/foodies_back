@@ -49,8 +49,21 @@ const getFollowings = async (req, res) => {
   res.status(200).json({ followings });
 };
 
-export const getFollowingsWrapper = controllerWrapper(getFollowings); // Обгортаємо у `controllerWrapper`
+const followUser = async (req, res) => {
+  const followerId = req.user.id;
+  const { followingId } = req.body;
 
+  if (!followingId) {
+    throw HttpError(400, "followingId is required.");
+  }
+
+  const follow = await userService.followUser(followerId, followingId);
+
+  res.status(201).json({ message: "Followed successfully", follow });
+};
+
+export const followUserWrapper = controllerWrapper(followUser);
+export const getFollowingsWrapper = controllerWrapper(getFollowings);
 export const getFollowersWrapper = controllerWrapper(getFollowers);
 export const updateAvatarWrapper = controllerWrapper(updateAvatar);
 export const registerWrapper = controllerWrapper(register);
