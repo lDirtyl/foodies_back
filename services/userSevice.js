@@ -3,6 +3,9 @@ import HttpError from '../helpers/HttpError.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import gravatar from 'gravatar';
+import Follow from "../models/follow.js";
+import Recipe from "../models/Recipe.js";
+import Favorite from "../models/favorite.js";
 
 export async function registerUser({ name, email, password }) {
   const existingUser = await User.findOne({ where: { email } });
@@ -20,6 +23,7 @@ export async function registerUser({ name, email, password }) {
 
   return {
     user: {
+      id: newUser.id,
       name: newUser.name,
       email: newUser.email,
       avatarURL: newUser.avatarURL
@@ -41,6 +45,7 @@ export async function loginUser({ email, password }) {
   return {
     token,
     user: {
+      id: user.id,
       name: user.name,
       email: user.email,
       avatarURL: user.avatarURL
@@ -53,4 +58,118 @@ export async function logoutUser(userId) {
   if (!user) throw HttpError(401, "Not authorized");
   user.token = null;
   await user.save();
+}
+
+export const updateAvatar = async (userId, avatarURL) => {
+  const user = await User.findByPk(userId);
+  if (!user) throw HttpError(404, 'Користувача не знайдено');
+
+  await user.update({ avatarURL });
+
+  return { avatarURL };
+};
+
+export async function getFollowers(userId) {
+  const user = await User.findByPk(userId, {
+    include: [
+      {
+        model: User,
+        as: "followers",
+        attributes: ["id", "name", "email", "avatarURL"],
+      },
+    ],
+  });
+
+  if (!user || !user.followers || user.followers.length === 0) {
+    return [];
+  }
+
+  return user.followers;
+}
+
+export async function getFollowings(userId) {
+  const user = await User.findByPk(userId, {
+    include: [
+      {
+        model: User,
+        as: "followings",
+        attributes: ["id", "name", "email", "avatarURL"],
+      },
+    ],
+  });
+
+  if (!user || !user.followings || user.followings.length === 0) {
+    return [];
+  }
+
+  return user.followings;
+}
+
+export async function followUser(followerId, followingId) {
+  if (followerId === followingId) {
+    throw HttpError(400, "You cannot follow yourself.");
+  }
+
+  const existingFollow = await Follow.findOne({
+    where: { followerId, followingId },
+  });
+
+  if (existingFollow) {
+    throw HttpError(400, "You are already following this user.");
+  }
+
+  return await Follow.create({followerId, followingId});
+}
+
+export async function unfollowUser(followerId, followingId) {
+  if (followerId === followingId) {
+    throw HttpError(400, "You cannot unfollow yourself.");
+  }
+
+  const follow = await Follow.findOne({
+    where: { followerId, followingId },
+  });
+
+  if (!follow) {
+    throw HttpError(404, "You are not following this user.");
+  }
+
+  await follow.destroy();
+  return { message: "Unfollowed successfully" };
+}
+
+export async function getUserDetails(currentUserId, targetUserId) {
+  const user = await User.findByPk(targetUserId, {
+    attributes: ["id", "name", "email", "avatarURL"],
+  });
+
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  const recipesCount = await Recipe.count({ where: { ownerId: targetUserId } });
+  const followersCount = await Follow.count({ where: { followingId: targetUserId } });
+
+  if (currentUserId === targetUserId) {
+    const followingsCount = await Follow.count({ where: { followerId: currentUserId } });
+    const favoritesCount = await Favorite.count({ where: { userId: currentUserId } });
+
+    return {
+      user,
+      details: {
+        recipesCount,
+        favoritesCount,
+        followersCount,
+        followingsCount,
+      },
+    };
+  }
+
+  return {
+    user,
+    details: {
+      recipesCount,
+      followersCount,
+    },
+  };
 }
