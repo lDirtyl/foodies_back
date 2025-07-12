@@ -12,6 +12,8 @@ Dockerfile~
 .vscode/
 .idea/
 .DS_Store
+seeders/
+db/migrations/
 swagger/swagger-output.json
 tmp/
 temp/
