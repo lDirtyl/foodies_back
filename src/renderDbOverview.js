@@ -1,8 +1,8 @@
 // src/renderDbOverview.js
 // Функція для отримання структури БД та формування HTML-розмітки
 
-import renderCategoriesBlock from "./renderCategoriesBlock.js";
 import renderUserBlock from "./renderUserBlock.js";
+import renderCategoriesBlock from "./renderCategoriesBlock.js";
 
 async function renderDbOverview({ sequelize }) {
   // Динамічно імпортуємо моделі (уникаємо циклічних залежностей)
