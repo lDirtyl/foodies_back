@@ -45,9 +45,15 @@ const getCurrentUser = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
-  if (!req.file) throw HttpError(400, 'Файл не завантажено');
+  // Отримуємо URL з тіла запиту.
+  const { avatarURL } = req.body;
 
-  const avatarURL = `/uploads/avatars/${req.file.filename}`;
+  // Перевіряємо, чи було передано avatarURL
+  if (typeof avatarURL === 'undefined') {
+    throw HttpError(400, 'avatarURL is required in the request body');
+  }
+
+  // Викликаємо сервіс для оновлення аватара
   const result = await userService.updateAvatar(req.user.id, avatarURL);
 
   res.json(result);

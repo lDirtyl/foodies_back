@@ -27,6 +27,8 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
 
+// Роздача статичних файлів з папки 'public'
+app.use(express.static("public"));
 app.use("/uploads", express.static(UPLOAD_DIR));
 app.use("/api-docs", ...swaggerDocs);
 

@@ -10,9 +10,8 @@
     "description": "This is a documentation of foodies app\n"
   },
   "servers": [
-    {
-      "url": "http://localhost:3000"
-    }
+    { "url": "https://foodies-back-1.onrender.com" },
+    { "url": "http://localhost:3000" }
   ],
   "tags": [
     {
