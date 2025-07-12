@@ -1,6 +1,6 @@
 apis:
   sample@v1:
-    root: docs/openapi.yaml
+    root: swagger/docs/openapi.yaml
 extends:
   - recommended
 rules:

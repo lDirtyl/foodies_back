@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блок Аутентифікації Користувача</title>
+    <style>
+        /* General styles for the container */
+        #user-block {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Styles for login and registration forms */
+        #user-block div[style*="flex:1"] {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        #user-block input[type="email"],
+        #user-block input[type="password"],
+        #user-block input[type="text"] {
+            display: block;
+            width: calc(100% - 20px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        #user-block form button {
+            padding: 8px 12px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #user-block form button:hover {
+            background-color: #e0e0e0;
+        }
+
+        #message-display {
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+            text-align: center;
+        }
+
+        /* Styles for the logged-in user profile card */
+        #profile-side {
+            display: none; /* Hidden by default, will be set to 'flex' by JS */
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            background: #f7f7f7;
+            border-radius: 10px;
+            border: 1px solid #e1e1e1;
+            padding: 15px;
+            min-width: 160px;
+            min-height: 250px;
+            max-height: 250px;
+            box-sizing: border-box;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #avatar-container {
+            position: relative;
+            display: inline-block;
+            width: 90px;
+            height: 90px;
+        }
+
+        #current-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #eee;
+            object-fit: cover;
+        }
+
+        #edit-avatar-btn, #delete-avatar-btn {
+            display: none; /* Hidden by default */
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            padding: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        #edit-avatar-btn {
+            bottom: -5px;
+            left: -5px;
+        }
+
+        #delete-avatar-btn {
+            top: -5px;
+            right: -5px;
+        }
+
+        #edit-avatar-btn:hover, #delete-avatar-btn:hover {
+            transform: scale(1.1);
+        }
+
+        #profile-info {
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #current-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            word-break: break-all;
+            margin-bottom: 5px;
+        }
+
+        #current-email {
+            font-size: 0.95em;
+            color: #555;
+            word-break: break-all;
+        }
+
+        #logout-btn {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            width: auto;
+        }
+
+        #logout-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 480px) {
+            #user-block {
+                flex-direction: column;
+            }
+            #profile-side {
+                width: 100%;
+                min-height: 200px;
+                max-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="user-block">
+        <div id="auth-container" style="min-width:180px;">
+            <div style="font-weight:bold;font-size:1.1em;margin-bottom:8px;">Аутентифікація</div>
+            <form id="login-form" style="margin-bottom:8px;">
+                <input name="email" type="email" placeholder="Email" required>
+                <input name="password" type="password" placeholder="Пароль" required>
+                <button type="submit" id="login-btn">Увійти</button>
+            </form>
+            <form id="register-form" style="margin-bottom:8px;">
+                <input name="name" type="text" placeholder="Ім'я" required>
+                <input name="email" type="email" placeholder="Email" required>
+                <input name="password" type="password" placeholder="Пароль" required>
+                <button type="submit">Реєстрація</button>
+            </form>
+            <!-- Область для вывода сообщений -->
+            <div id="message-display"></div>
+        </div>
+        <div id="profile-side">
+            <div id="avatar-container">
+                <img id="current-avatar" src="/uploads/avatars/default.png" alt="avatar">
+                <input type="file" id="avatar-input" accept="image/*" style="display:none">
+                <!-- Иконка карандаша -->
+                <span id="edit-avatar-btn" title="Змінити аватар">
+                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#1c1e21" d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zm14.71-9.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>
+                </span>
+                <!-- Иконка корзины -->
+                <span id="delete-avatar-btn" title="Видалити аватар">
+                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#fa383e" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                </span>
+            </div>
+            <div id="profile-info">
+                <div id="current-name"></div>
+                <div id="current-email"></div>
+            </div>
+            <button id="logout-btn">Вийти</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // === Cloudinary config ===
+        const CLOUDINARY_CLOUD_NAME = 'dlh9bzjk6';
+        const CLOUDINARY_PRESET = 'avatar_preset';
+        // === END Cloudinary config ===
+
+        // Функция для отображения сообщений
+        function showMessage(message, type = 'info') {
+          const messageDisplay = document.getElementById('message-display');
+          messageDisplay.textContent = message;
+          messageDisplay.style.display = 'block';
+          if (type === 'error') {
+            messageDisplay.style.backgroundColor = '#f8d7da';
+            messageDisplay.style.color = '#721c24';
+            messageDisplay.style.border = '1px solid #f5c6cb';
+          } else if (type === 'success') {
+            messageDisplay.style.backgroundColor = '#d4edda';
+            messageDisplay.style.color = '#155724';
+            messageDisplay.style.border = '1px solid #c3e6cb';
+          } else {
+            messageDisplay.style.backgroundColor = '#e2e3e5';
+            messageDisplay.style.color = '#383d41';
+            messageDisplay.style.border = '1px solid #d6d8db';
+          }
+          setTimeout(() => {
+            messageDisplay.style.display = 'none';
+          }, 5000); // Скрыть сообщение через 5 секунд
+        }
+
+        async function fetchCurrentUser() {
+          // Добавляем window.location.origin для абсолютного URL
+          const res = await fetch(window.location.origin + '/api/users/current', { credentials: 'include' });
+          if (res.ok) {
+            const user = await res.json();
+            document.getElementById('profile-side').style.display = 'flex';
+            document.getElementById('current-name').textContent = user.name;
+            document.getElementById('current-email').textContent = user.email;
+            document.getElementById('current-avatar').src = user.avatarURL || '/uploads/avatars/default.png';
+            document.getElementById('logout-btn').style.display = '';
+            document.getElementById('auth-container').style.display = 'none';
+          } else {
+            document.getElementById('profile-side').style.display = 'none';
+            document.getElementById('logout-btn').style.display = 'none';
+            document.getElementById('auth-container').style.display = '';
+          }
+        }
+        fetchCurrentUser();
+
+        document.getElementById('login-form').onsubmit = async e => {
+          e.preventDefault();
+          const form = e.target;
+          // Добавляем window.location.origin для абсолютного URL
+          const res = await fetch(window.location.origin + '/api/users/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email: form.email.value, password: form.password.value })
+          });
+          if (res.ok) {
+            fetchCurrentUser();
+            showMessage('Вхід успішний!', 'success');
+          } else {
+            showMessage('Помилка логіну. Перевірте дані.', 'error');
+          }
+        };
+
+        document.getElementById('register-form').onsubmit = async e => {
+          e.preventDefault();
+          const form = e.target;
+          const email = form.email.value;
+          const password = form.password.value;
+          // Добавляем window.location.origin для абсолютного URL
+          const res = await fetch(window.location.origin + '/api/users/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ name: form.name.value, email, password })
+          });
+          if (res.ok) {
+            // Показати повідомлення
+            showMessage('Реєстрація успішна! Тепер увійдіть.', 'success');
+            // Підставити email і пароль у форму логіну
+            document.querySelector('#login-form input[name=email]').value = email;
+            document.querySelector('#login-form input[name=password]').value = password;
+            // Фокус на кнопку "Увійти"
+            document.getElementById('login-btn').focus();
+          } else {
+            showMessage('Помилка реєстрації. Можливо, користувач з таким email вже існує.', 'error');
+          }
+        };
+
+        document.getElementById('logout-btn').onclick = async () => {
+          // Добавляем window.location.origin для абсолютного URL
+          await fetch(window.location.origin + '/api/users/logout', { method: 'POST', credentials: 'include' });
+          fetchCurrentUser();
+          showMessage('Ви успішно вийшли.', 'info');
+        };
+
+        // === Аватарка: UI и загрузка ===
+        const avatarContainer = document.getElementById('avatar-container');
+        const avatarImg = document.getElementById('current-avatar');
+        const editBtn = document.getElementById('edit-avatar-btn');
+        const deleteBtn = document.getElementById('delete-avatar-btn');
+        const input = document.getElementById('avatar-input');
+        const profileSide = document.getElementById('profile-side');
+
+        // Показать иконки при наведении
+        avatarContainer.addEventListener('mouseenter', () => {
+          editBtn.style.display = 'block';
+          deleteBtn.style.display = 'block';
+        });
+        avatarContainer.addEventListener('mouseleave', () => {
+          editBtn.style.display = 'none';
+          deleteBtn.style.display = 'none';
+        });
+
+        // Клик по карандашу — открыть выбор файла
+        editBtn.onclick = () => input.click();
+
+        // Загрузка файла на Cloudinary
+        input.onchange = async e => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('upload_preset', CLOUDINARY_PRESET);
+          // Cloudinary unsigned upload
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (data.secure_url) {
+            // Отправить PATCH/PUT на backend, чтобы сохранить новый avatarURL
+            // Добавляем window.location.origin для абсолютного URL
+            const saveRes = await fetch(window.location.origin + '/api/users/avatar', {
+              method: 'PATCH',
+              headers: {'Content-Type': 'application/json'},
+              credentials: 'include',
+              body: JSON.stringify({ avatarURL: data.secure_url })
+            });
+            if (saveRes.ok) {
+              avatarImg.src = data.secure_url;
+              showMessage('Аватарка успішно оновлена!', 'success');
+            } else {
+              showMessage('Не вдалося оновити аватарку на сервері.', 'error');
+            }
+          } else {
+            showMessage('Помилка завантаження на Cloudinary.', 'error');
+          }
+        };
+
+        // Клик по корзине — удалить аватарку (сбросить на дефолтную)
+        deleteBtn.onclick = async () => {
+          // Добавляем window.location.origin для абсолютного URL
+          const res = await fetch(window.location.origin + '/api/users/avatar', {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
+            body: JSON.stringify({ avatarURL: '' }) // сервер должен сбросить на дефолтную
+          });
+          if (res.ok) {
+            avatarImg.src = '/uploads/avatars/default.png';
+            showMessage('Аватарка успішно видалена!', 'success');
+          } else {
+            showMessage('Не вдалося видалити аватарку.', 'error');
+          }
+        };
+        // === END Аватарка ===
+      </script>
+</body>
+</html>

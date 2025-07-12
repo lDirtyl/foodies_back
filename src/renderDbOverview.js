@@ -60,11 +60,21 @@ async function renderDbOverview({ sequelize }) {
     html: `
       <div style="font-family:sans-serif;max-width:fit-content;margin:40px auto;padding:24px;border:1px solid #eee;border-radius:8px;">
         <h2 style="color:#4caf50;">база завантажена з render</h2>
+
+        <div style="margin: 16px 0; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+          <p style="margin: 4px 0;"><a href="http://localhost:3000/api-docs/" target="_blank">swagger локально http://localhost:3000/api-docs/</a></p>
+          <p style="margin: 4px 0;"><a href="https://foodies-back-1.onrender.com/api-docs/" target="_blank">swagger проекту на сервері https://foodies-back-1.onrender.com/api-docs/</a></p>
+        </div>
+
+        ${userBlock}
+
         <p><b>юзерів у базі:</b> ${userCount}</p>
         <p style="margin:0 0 16px 0;"><small>${userNames}</small></p>
-        ${userBlock}
+        
         <p><b>рецептів у базі:</b> ${recipeCount}</p>
+        
         ${categoriesBlock}
+        
         <p><b>існуючі таблиці на рендер:</b></p>
         ${tablesMarkup}
       </div>

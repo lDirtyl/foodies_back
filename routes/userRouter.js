@@ -20,11 +20,10 @@ router.post('/register', registerWrapper);
 router.post('/login', loginWrapper);
 router.post('/logout', authMiddleware, logoutWrapper);
 router.get('/current', authMiddleware, getCurrentUserWrapper);
+// Маршрут для оновлення аватара. Приймає JSON { avatarURL: '...' }
 router.patch(
-    '/avatars',
+    '/avatar',
     authMiddleware,
-    upload.single('avatar'),
-    resizeAvatar,
     updateAvatarWrapper
 );
 router.get("/followers", authMiddleware, getFollowersWrapper);
