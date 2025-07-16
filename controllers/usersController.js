@@ -1,7 +1,7 @@
-import * as userService from '../services/userSevice.js';
-import controllerWrapper from '../helpers/controllerWrapper.js';
-import HttpError from '../helpers/HttpError.js';
-import { registerUserSchema, loginUserSchema } from '../schemas/userSchema.js';
+import * as userService from "../services/userSevice.js";
+import controllerWrapper from "../helpers/controllerWrapper.js";
+import HttpError from "../helpers/HttpError.js";
+import { registerUserSchema, loginUserSchema } from "../schemas/userSchema.js";
 
 const register = async (req, res, next) => {
   const { error, value } = registerUserSchema.validate(req.body);
@@ -9,13 +9,21 @@ const register = async (req, res, next) => {
   const result = await userService.registerUser(value);
 
   // Встановлюємо токен у cookie
-  res.cookie('token', result.token, {
+  res.cookie("token", result.token, {
     httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
-  res.status(201).json({ name: result.name, email: result.email, avatarURL: result.avatarURL });
+  res.status(201).json({
+    user: {
+      id: result.user.id,
+      name: result.user.name,
+      email: result.user.email,
+      avatarURL: result.user.avatarURL,
+    },
+    token: result.token,
+  });
 };
 
 const login = async (req, res, next) => {
@@ -24,13 +32,21 @@ const login = async (req, res, next) => {
   const result = await userService.loginUser(value);
 
   // Встановлюємо токен у cookie
-  res.cookie('token', result.token, {
+  res.cookie("token", result.token, {
     httpOnly: true,
-    sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
-  res.json({ name: result.name, email: result.email, avatarURL: result.avatarURL });
+  res.json({
+    user: {
+      id: result.user.id,
+      name: result.user.name,
+      email: result.user.email,
+      avatarURL: result.user.avatarURL,
+    },
+    token: result.token,
+  });
 };
 
 const logout = async (req, res, next) => {
@@ -40,8 +56,8 @@ const logout = async (req, res, next) => {
 };
 
 const getCurrentUser = async (req, res) => {
-  const { name, email, avatarURL } = req.user;
-  res.json({ name, email, avatarURL });
+  const { id, name, email, avatarURL } = req.user;
+  res.json({ id, name, email, avatarURL });
 };
 
 const updateAvatar = async (req, res) => {
@@ -49,8 +65,8 @@ const updateAvatar = async (req, res) => {
   const { avatarURL } = req.body;
 
   // Перевіряємо, чи було передано avatarURL
-  if (typeof avatarURL === 'undefined') {
-    throw HttpError(400, 'avatarURL is required in the request body');
+  if (typeof avatarURL === "undefined") {
+    throw HttpError(400, "avatarURL is required in the request body");
   }
 
   // Викликаємо сервіс для оновлення аватара
@@ -100,7 +116,10 @@ const getUserDetails = async (req, res) => {
   const currentUserId = req.user.id;
   const targetUserId = req.params.userId;
 
-  const userDetails = await userService.getUserDetails(currentUserId, targetUserId);
+  const userDetails = await userService.getUserDetails(
+    currentUserId,
+    targetUserId
+  );
   res.status(200).json(userDetails);
 };
 

@@ -1,8 +1,8 @@
-import User from '../models/User.js';
-import HttpError from '../helpers/HttpError.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import gravatar from 'gravatar';
+import User from "../models/User.js";
+import HttpError from "../helpers/HttpError.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
 import Follow from "../models/follow.js";
 import Recipe from "../models/Recipe.js";
 import Favorite from "../models/favorite.js";
@@ -18,16 +18,24 @@ export async function registerUser({ name, email, password }) {
     name,
     email,
     password: hashedPassword,
-    avatarURL
+    avatarURL,
   });
 
+  // Создаем токен для нового пользователя
+  const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
+  newUser.token = token;
+  await newUser.save();
+
   return {
+    token,
     user: {
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
-      avatarURL: newUser.avatarURL
-    }
+      avatarURL: newUser.avatarURL,
+    },
   };
 }
 
@@ -38,7 +46,9 @@ export async function loginUser({ email, password }) {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw HttpError(401, "Email or password is wrong");
 
-  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
   user.token = token;
   await user.save();
 
@@ -48,8 +58,8 @@ export async function loginUser({ email, password }) {
       id: user.id,
       name: user.name,
       email: user.email,
-      avatarURL: user.avatarURL
-    }
+      avatarURL: user.avatarURL,
+    },
   };
 }
 
@@ -62,7 +72,7 @@ export async function logoutUser(userId) {
 
 export const updateAvatar = async (userId, avatarURL) => {
   const user = await User.findByPk(userId);
-  if (!user) throw HttpError(404, 'Користувача не знайдено');
+  if (!user) throw HttpError(404, "Користувача не знайдено");
 
   await user.update({ avatarURL });
 
@@ -118,7 +128,7 @@ export async function followUser(followerId, followingId) {
     throw HttpError(400, "You are already following this user.");
   }
 
-  return await Follow.create({followerId, followingId});
+  return await Follow.create({ followerId, followingId });
 }
 
 export async function unfollowUser(followerId, followingId) {
@@ -148,11 +158,17 @@ export async function getUserDetails(currentUserId, targetUserId) {
   }
 
   const recipesCount = await Recipe.count({ where: { ownerId: targetUserId } });
-  const followersCount = await Follow.count({ where: { followingId: targetUserId } });
+  const followersCount = await Follow.count({
+    where: { followingId: targetUserId },
+  });
 
   if (currentUserId === targetUserId) {
-    const followingsCount = await Follow.count({ where: { followerId: currentUserId } });
-    const favoritesCount = await Favorite.count({ where: { userId: currentUserId } });
+    const followingsCount = await Follow.count({
+      where: { followerId: currentUserId },
+    });
+    const favoritesCount = await Favorite.count({
+      where: { userId: currentUserId },
+    });
 
     return {
       user,
