@@ -19,6 +19,7 @@ const PORT = process.env.PORT || 3000;
 const UPLOAD_DIR = "public/images";
 
 const allowedOrigins = [
+  "http://localhost:3000",
   "http://localhost:5173",
   "https://foodies-front-rouge.vercel.app"
 ];
