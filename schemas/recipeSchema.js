@@ -16,7 +16,7 @@ export const createRecipeSchema = Joi.object({
   )
 });
 
-// Schema for validating recipe ID parameters
+
 export const recipeIdSchema = Joi.object({
   id: Joi.string()
     .guid({ version: 'uuidv4' })
@@ -25,4 +25,12 @@ export const recipeIdSchema = Joi.object({
       'string.guid': 'Invalid recipe ID format, must be a valid UUID',
       'any.required': 'Recipe ID is required'
     })
+});
+
+export const searchSchema = Joi.object({
+  category: Joi.string().guid({ version: 'uuidv4' }).allow(null),
+  ingredient: Joi.string().allow(null),
+  area: Joi.string().allow(null),
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(100).default(10)
 });
