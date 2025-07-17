@@ -18,16 +18,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const UPLOAD_DIR = "public/images";
 
-// Дозволяємо cookie + credentials для фронта
+//app.use(
+  //  cors({
+    //    "http://localhost:5173",
+    //    credentials: true,
+    //  })
+    //);
+    
+    // Дозволяємо cookie + credentials для фронта
 app.use(
   cors({
-    origin: [
-      "https://foodies-front-rouge.vercel.app",
-      "http://localhost:5173"   // якщо фронт на іншому порту — вкажи його тут
-    ],
+    origin: "https://foodies-front-rouge.vercel.app",
     credentials: true,
   })
 );
+
+
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
