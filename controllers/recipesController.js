@@ -2,12 +2,13 @@ import * as recipeService from '../services/recipeService.js';
 import controllerWrapper from '../helpers/controllerWrapper.js';
 import HttpError from '../helpers/HttpError.js';
 import { paginationSchema } from '../schemas/paginationSchema.js';
-import { createRecipeSchema, recipeIdSchema } from '../schemas/recipeSchema.js';
+import { recipeIdSchema, searchSchema } from '../schemas/recipeSchema.js';
 
 const searchRecipes = async (req, res, next) => {
-  const { error, value } = paginationSchema.validate(req.query);
+  const { error, value } = searchSchema.validate(req.query);
   if (error) throw HttpError(400, error.message);
-  const { category, ingredient, area, page, limit } = { ...req.query, ...value };
+  
+  const { category, ingredient, area, page, limit } = value;
   const result = await recipeService.searchRecipes({ category, ingredient, area, page, limit });
   res.json(result);
 };
