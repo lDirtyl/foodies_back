@@ -21,7 +21,8 @@ const UPLOAD_DIR = "public/images";
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
-  "https://foodies-front-rouge.vercel.app"
+  "https://foodies-front-rouge.vercel.app",
+  "https://foodies-back-x15g.onrender.com"
 ];
 
 app.use(
@@ -57,6 +58,7 @@ app.use("/api/areas", areasRouter);
 app.use("/api/ingredients", ingredientsRouter);
 app.use("/api/testimonials", testimonialsRouter);
 
+
 // Головна сторінка
 app.get("/", async (req, res) => {
   try {
@@ -67,6 +69,43 @@ app.get("/", async (req, res) => {
     res.status(500).send(`<pre>${error.message}</pre>`);
   }
 });
+
+// Тестовый эндпоинт для диагностики
+app.get('/test-endpoint', (req, res) => res.send('ok'));
+
+// Логирование всех маршрутов Express 5
+function logExpressRoutes(app) {
+  if (!app._router || !app._router.stack) {
+    console.log('⚠️  No endpoints registered or Express internals changed!');
+    return;
+  }
+  const routes = [];
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      // Это обычный маршрут
+      const methods = Object.keys(middleware.route.methods)
+        .map(m => m.toUpperCase())
+        .join(', ');
+      routes.push({ method: methods, path: middleware.route.path });
+    } else if (middleware.name === 'router' && middleware.handle.stack) {
+      // Это роутер
+      middleware.handle.stack.forEach((handler) => {
+        if (handler.route) {
+          const methods = Object.keys(handler.route.methods)
+            .map(m => m.toUpperCase())
+            .join(', ');
+          routes.push({ method: methods, path: handler.route.path });
+        }
+      });
+    }
+  });
+  if (routes.length === 0) {
+    console.log('⚠️  No endpoints registered!');
+  } else {
+    console.log('Registered endpoints:');
+    console.table(routes);
+  }
+}
 
 // 404 handler
 app.use((req, res) => {
@@ -86,6 +125,7 @@ try {
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
+    logExpressRoutes(app);
   });
 } catch (error) {
   console.error("❌ Unable to connect to the DB:", error);

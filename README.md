@@ -15,3 +15,6 @@ npm start
 node server.js
 
 Сервер буде доступним по адресу http://localhost:3000 (чи по вашому порту).
+
+для тесту можна використати
+npm install express-list-endpoints
