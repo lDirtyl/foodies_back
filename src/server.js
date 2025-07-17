@@ -22,8 +22,8 @@ const UPLOAD_DIR = "public/images";
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",   // якщо фронт на іншому порту — вкажи його тут
       "https://foodies-front-rouge.vercel.app"
+      "http://localhost:5173",   // якщо фронт на іншому порту — вкажи його тут
     ],
     credentials: true,
   })
