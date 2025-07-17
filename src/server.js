@@ -21,7 +21,10 @@ const UPLOAD_DIR = "public/images";
 // Дозволяємо cookie + credentials для фронта
 app.use(
   cors({
-    origin: "http://localhost:5173", // якщо фронт на іншому порту — вкажи його тут
+    origin: [
+      "http://localhost:5173",   // якщо фронт на іншому порту — вкажи його тут
+      "https://foodies-front-rouge.vercel.app"
+    ],
     credentials: true,
   })
 );
