@@ -1,0 +1,120 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f7f9;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+#auth-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+#auth-container h1 {
+    color: #1a202c;
+}
+
+#password-input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#submit-password {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#submit-password:hover {
+    background-color: #4338ca;
+}
+
+.error-message {
+    color: #e53e3e;
+    margin-top: 10px;
+}
+
+#admin-panel {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 40px);
+}
+
+header {
+    padding: 10px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+main {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+aside {
+    width: 250px;
+    padding: 20px;
+    background-color: #fff;
+    border-right: 1px solid #e2e8f0;
+    overflow-y: auto;
+}
+
+#tables-list {
+    list-style: none;
+    padding: 0;
+}
+
+#tables-list li {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#tables-list li:hover, #tables-list li.active {
+    background-color: #edf2f7;
+}
+
+section#table-content-container {
+    flex-grow: 1;
+    padding: 20px;
+    overflow: auto;
+    background-color: #fff;
+}
+
+#table-content {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+thead {
+    background-color: #f7fafc;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+    white-space: nowrap;
+}

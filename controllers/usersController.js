@@ -56,20 +56,18 @@ const logout = async (req, res, next) => {
 };
 
 const getCurrentUser = async (req, res) => {
-  const { id, name, email, avatarURL } = req.user;
-  res.json({ id, name, email, avatarURL });
+  const user = await userService.getCurrentUser(req.user.id);
+  res.status(200).json(user);
 };
 
 const updateAvatar = async (req, res) => {
-  // Отримуємо URL з тіла запиту.
-  const { avatarURL } = req.body;
-
-  // Перевіряємо, чи було передано avatarURL
-  if (typeof avatarURL === "undefined") {
-    throw HttpError(400, "avatarURL is required in the request body");
+  // The new avatar URL is available from the uploaded file
+  if (!req.file) {
+    throw HttpError(400, 'Avatar file is required.');
   }
+  const avatarURL = req.file.path;
 
-  // Викликаємо сервіс для оновлення аватара
+  // Call the service to update the avatar
   const result = await userService.updateAvatar(req.user.id, avatarURL);
 
   res.json(result);
@@ -113,13 +111,11 @@ const unfollowUser = async (req, res) => {
 };
 
 const getUserDetails = async (req, res) => {
-  const currentUserId = req.user.id;
+  // ID целевого пользователя берется из параметров URL
   const targetUserId = req.params.userId;
 
-  const userDetails = await userService.getUserDetails(
-    currentUserId,
-    targetUserId
-  );
+  // Используем новый сервис для получения полной информации
+  const userDetails = await userService.getUserDetails(targetUserId);
   res.status(200).json(userDetails);
 };
 

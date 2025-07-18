@@ -6,354 +6,8 @@
     <title>Блок Аутентифікації Користувача</title>
     <!-- Font Awesome для иконок виджета -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <!-- Стили для виджета Quest Board -->
-    <style>
-        .quest-widget-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .widget-main-button {
-            background-color: #4f46e5;
-            color: white;
-            border: 2px solid transparent;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        .widget-main-button:hover {
-            background-color: #4338ca;
-            transform: scale(1.05);
-            border-color: #FFD700;
-        }
-        .widget-icon-q {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 10px;
-            filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
-        }
-        .widget-sub-buttons-container {
-            position: absolute;
-            bottom: 70px;
-            right: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
-            min-width: 150px;
-        }
-        .widget-sub-buttons-container.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .widget-sub-button {
-            background-color: #6366f1;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            font-size: 14px;
-            cursor: pointer;
-            text-align: left;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .widget-sub-button:hover {
-            background-color: #4f46e5;
-            transform: translateX(3px);
-        }
-        .widget-sub-button i {
-            font-size: 16px;
-        }
-        .iframe-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .iframe-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .iframe-container {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            width: 92%;
-            height: 98%;
-            max-width: 1400px;
-            max-height: 1700px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .iframe-content {
-            border: none;
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        .iframe-close-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 30px;
-            color: #6b7280;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            z-index: 10001;
-        }
-        .iframe-close-button:hover {
-            background-color: #e5e7eb;
-            color: #374151;
-        }
-        @media (max-width: 768px) {
-            .quest-widget-container {
-                bottom: 15px;
-                right: 15px;
-            }
-            .widget-main-button {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
-            .widget-sub-buttons-container {
-                bottom: 65px;
-                padding: 8px;
-                gap: 8px;
-                min-width: 130px;
-            }
-            .widget-sub-button {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-            .iframe-container {
-                width: 95%;
-                height: 95%;
-            }
-            .iframe-close-button {
-                font-size: 24px;
-                top: 5px;
-                right: 5px;
-            }
-        }
-
-        /* General styles for the container */
-        #user-block {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Styles for login and registration forms */
-        #user-block div[style*="flex:1"] {
-            flex: 1;
-            min-width: 180px;
-        }
-
-        #user-block input[type="email"],
-        #user-block input[type="password"],
-        #user-block input[type="text"] {
-            display: block;
-            width: calc(100% - 20px);
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        #user-block form button {
-            padding: 8px 12px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        #user-block form button:hover {
-            background-color: #e0e0e0;
-        }
-
-        #message-display {
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-weight: bold;
-            display: none;
-            text-align: center;
-        }
-
-        /* Styles for the logged-in user profile card */
-        #profile-side {
-            background: #fff;
-            border-radius: 20px;
-            border: 1px solid #e1e1e1;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
-            width: 300px;
-            max-width: 90%;
-            box-sizing: border-box;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        #avatar-container {
-            position: relative;
-            display: inline-block;
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
-        }
-
-        #current-avatar {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: none;
-            object-fit: cover;
-        }
-
-        #delete-avatar-btn {
-            display: none; /* Hidden by default */
-            position: absolute;
-            bottom: 0;
-            right: -33px; /* Position it to the right of the plus icon */
-            background-color: #dc3545; /* Red background for delete */
-            color: white;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            border: 2px solid #fff;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        #avatar-container:hover #delete-avatar-btn {
-            display: flex;
-        }
-
-        #add-icon-overlay {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background-color: #007bff;
-            color: white;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-            border: 2px solid #fff;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        #profile-name {
-            font-weight: bold;
-            font-size: 1.4em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        #profile-email {
-            font-size: 0.95em;
-            color: #555;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        #profile-stats {
-            width: 100%;
-            padding: 0 10px;
-            margin-bottom: 30px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            color: #777;
-            font-size: 0.9em;
-        }
-
-        .stat-value {
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        #logout-btn {
-            padding: 12px 20px;
-            background-color: #333;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        #logout-btn:hover {
-            background-color: #555;
-        }
-
-        /* Responsive styles */
-        @media (max-width: 480px) {
-            #profile-side {
-                width: 100%;
-                padding: 20px;
-            }
-        }
-    </style>
+    <!-- Стили для блока пользователя и виджета -->
+    <link rel="stylesheet" href="/user-block.css">
 </head>
 <body>
     <!-- Quest Board Widget вынесен за пределы всех внутренних блоков -->
@@ -376,27 +30,35 @@
             <iframe id="questIframe" class="iframe-content" src=""></iframe>
         </div>
     </div>
-    <div id="user-block">
-        <div id="auth-container" style="min-width:180px;">
-            <div style="font-weight:bold;font-size:1.1em;margin-bottom:8px;">Аутентифікація</div>
-            <form id="login-form" style="margin-bottom:8px;">
+    <div id="user-block" style="display: grid; grid-template-rows: auto auto auto; row-gap: 15px;">
+        <!-- Содержимое будет динамически вставлено сюда из шаблонов -->
+    </div>
+
+    <!-- Шаблон для НЕ залогиненного пользователя -->
+    <template id="logged-out-template">
+        <div id="auth-container" style="min-width: 180px; grid-row: 1;">
+            <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">Аутентифікація</div>
+            <form id="login-form" style="margin-bottom: 8px;">
                 <input name="email" type="email" placeholder="Email" required>
                 <input name="password" type="password" placeholder="Пароль" required>
                 <button type="submit" id="login-btn">Увійти</button>
             </form>
-            <form id="register-form" style="margin-bottom:8px;">
+            <form id="register-form" style="margin-bottom: 8px;">
                 <input name="name" type="text" placeholder="Ім'я" required>
                 <input name="email" type="email" placeholder="Email" required>
                 <input name="password" type="password" placeholder="Пароль" required>
                 <button type="submit">Реєстрація</button>
             </form>
-            <!-- Область для выводу повідомлень -->
             <div id="message-display"></div>
         </div>
-        <div id="profile-side">
+    </template>
+
+    <!-- Шаблон для ЗАЛОГИНЕННОГО пользователя -->
+    <template id="logged-in-template">
+        <div id="profile-side" style="grid-row: 2;">
             <div id="avatar-container">
                 <img id="current-avatar" src="/uploads/avatars/default.png" alt="avatar">
-                <input type="file" id="avatar-input" accept="image/*" style="display:none">
+                <input type="file" id="avatar-input" accept="image/*" style="display: none;">
                 <div id="add-icon-overlay">+</div>
                 <div id="delete-avatar-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -407,32 +69,21 @@
                     </svg>
                 </div>
             </div>
-
-            <div id="profile-name"></div>
+            <a href="/profile" id="profile-link" style="text-decoration: none; color: inherit;"><div id="profile-name"></div></a>
             <div id="profile-email"></div>
-
             <div id="profile-stats">
-                <div class="stat-item">
-                    <span class="stat-label">Added recipes:</span>
-                    <span class="stat-value">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Favorites:</span>
-                    <span class="stat-value">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Followers:</span>
-                    <span class="stat-value">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Following:</span>
-                    <span class="stat-value">0</span>
-                </div>
+                <div class="stat-item"><span class="stat-label">Added recipes:</span><span class="stat-value">0</span></div>
+                <div class="stat-item"><span class="stat-label">Favorites:</span><span class="stat-value">0</span></div>
+                <div class="stat-item"><span class="stat-label">Followers:</span><span class="stat-value">0</span></div>
+                <div class="stat-item"><span class="stat-label">Following:</span><span class="stat-value">0</span></div>
             </div>
-
             <button id="logout-btn">LOG OUT</button>
         </div>
-    </div>
+        <div id="add-recipe-buttons-container" style="display: flex; flex-direction: column; gap: 10px; width: 100%; grid-row: 3;">
+            <button id="add-recipe-modal-btn" style="padding: 10px; background-color: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer;">Створити рецепт (модальне вікно)</button>
+            <a href="/add-recipe" style="display: block; padding: 10px; background-color: #6366f1; color: white; border: none; border-radius: 8px; cursor: pointer; text-align: center; text-decoration: none;">Створити рецепт (окрема сторінка)</a>
+        </div>
+    </template>
 
     <script type="module">
         // Quest Board Widget Script
@@ -443,199 +94,43 @@
         const questIframeOverlay = document.getElementById('questIframeOverlay');
         const questIframe = document.getElementById('questIframe');
         const iframeCloseButton = document.getElementById('iframeCloseButton');
-        const githubPagesUrl = 'https://essencemaks.github.io/Quests_Board/';
-        widgetMainButton.addEventListener('click', () => {
-            widgetSubButtons.classList.toggle('active');
+
+        document.getElementById('widgetMainButton').addEventListener('click', (event) => {
+            event.stopPropagation();
+            document.getElementById('widgetSubButtons').classList.toggle('active');
         });
-        document.addEventListener('click', (event) => {
-            if (!widgetMainButton.contains(event.target) && !widgetSubButtons.contains(event.target)) {
-                widgetSubButtons.classList.remove('active');
-            }
-        });
-        function openIframe(mode) {
-            let url = githubPagesUrl;
-            if (mode === 'add') {
-                url = `${githubPagesUrl}?action=add-quest`;
-            }
-            questIframe.src = url;
-            questIframeOverlay.classList.add('active');
-            widgetSubButtons.classList.remove('active');
-        }
+
         openQuestsBoardBtn.addEventListener('click', () => {
-            openIframe('board');
+            questIframe.src = '/quests-board';
+            questIframeOverlay.classList.add('active');
         });
+
         openAddQuestBtn.addEventListener('click', () => {
-            openIframe('add');
+            questIframe.src = '/add-quest';
+            questIframeOverlay.classList.add('active');
         });
+
         iframeCloseButton.addEventListener('click', () => {
             questIframeOverlay.classList.remove('active');
             questIframe.src = '';
         });
-        questIframeOverlay.addEventListener('click', (event) => {
+
+        document.addEventListener('click', (event) => {
+            if (!document.getElementById('widgetMainButton').contains(event.target) && !document.getElementById('widgetSubButtons').contains(event.target)) {
+                document.getElementById('widgetSubButtons').classList.remove('active');
+            }
             if (event.target === questIframeOverlay) {
-                iframeCloseButton.click();
+                questIframeOverlay.classList.remove('active');
+                questIframe.src = '';
             }
         });
-        // === Cloudinary config ===
-        const CLOUDINARY_CLOUD_NAME = 'dlh9bzjk6';
-        const CLOUDINARY_PRESET = 'avatar_preset';
-        // === END Cloudinary config ===
 
-        // Функция для отображения сообщений
-        function showMessage(message, type = 'info') {
-          const messageDisplay = document.getElementById('message-display');
-          messageDisplay.textContent = message;
-          messageDisplay.style.display = 'block';
-          if (type === 'error') {
-            messageDisplay.style.backgroundColor = '#f8d7da';
-            messageDisplay.style.color = '#721c24';
-            messageDisplay.style.border = '1px solid #f5c6cb';
-          } else if (type === 'success') {
-            messageDisplay.style.backgroundColor = '#d4edda';
-            messageDisplay.style.color = '#155724';
-            messageDisplay.style.border = '1px solid #c3e6cb';
-          } else {
-            messageDisplay.style.backgroundColor = '#e2e3e5';
-            messageDisplay.style.color = '#383d41';
-            messageDisplay.style.border = '1px solid #d6d8db';
-          }
-          setTimeout(() => {
-            messageDisplay.style.display = 'none';
-          }, 5000); // Скрыть сообщение через 5 секунд
-        }
+        // Импортируем и инициализируем обработчики
+        import { initUserBlockHandlers } from '/userBlockHandlers.js';
+        initUserBlockHandlers();
 
-        async function fetchCurrentUser() {
-          // Добавляем window.location.origin для абсолютного URL
-          const res = await fetch(window.location.origin + '/api/users/current', { credentials: 'include' });
-          if (res.ok) {
-            const user = await res.json();
-            document.getElementById('profile-side').style.display = 'flex';
-            document.getElementById('profile-name').textContent = user.name;
-            document.getElementById('profile-email').textContent = user.email;
-            document.getElementById('current-avatar').src = user.avatarURL || '/uploads/avatars/default.png';
-            document.getElementById('logout-btn').style.display = '';
-            document.getElementById('auth-container').style.display = 'none';
-          } else {
-            document.getElementById('profile-side').style.display = 'none';
-            document.getElementById('logout-btn').style.display = 'none';
-            document.getElementById('auth-container').style.display = '';
-          }
-        }
-        fetchCurrentUser();
-
-        document.getElementById('login-form').onsubmit = async e => {
-          e.preventDefault();
-          const form = e.target;
-          // Добавляем window.location.origin для абсолютного URL
-          const res = await fetch(window.location.origin + '/api/users/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ email: form.email.value, password: form.password.value })
-          });
-          if (res.ok) {
-            fetchCurrentUser();
-            showMessage('Вхід успішний!', 'success');
-          } else {
-            showMessage('Помилка логіну. Перевірте дані.', 'error');
-          }
-        };
-
-        document.getElementById('register-form').onsubmit = async e => {
-          e.preventDefault();
-          const form = e.target;
-          const email = form.email.value;
-          const password = form.password.value;
-          // Добавляем window.location.origin для абсолютного URL
-          const res = await fetch(window.location.origin + '/api/users/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ name: form.name.value, email, password })
-          });
-          if (res.ok) {
-            // Показати повідомлення
-            showMessage('Реєстрація успішна! Тепер увійдіть.', 'success');
-            // Підставити email і пароль у форму логіну
-            document.querySelector('#login-form input[name=email]').value = email;
-            document.querySelector('#login-form input[name=password]').value = password;
-            // Фокус на кнопку "Увійти"
-            document.getElementById('login-btn').focus();
-          } else {
-            showMessage('Помилка реєстрації. Можливо, користувач з таким email вже існує.', 'error');
-          }
-        };
-
-        document.getElementById('logout-btn').onclick = async () => {
-          // Добавляем window.location.origin для абсолютного URL
-          await fetch(window.location.origin + '/api/users/logout', { method: 'POST', credentials: 'include' });
-          fetchCurrentUser();
-          showMessage('Ви успішно вийшли.', 'info');
-        };
-
-        // === Аватарка: UI и загрузка ===
-        const avatarContainer = document.getElementById('avatar-container');
-        const avatarImg = document.getElementById('current-avatar');
-        const addIcon = document.getElementById('add-icon-overlay');
-        const deleteBtn = document.getElementById('delete-avatar-btn');
-        const input = document.getElementById('avatar-input');
-        const profileSide = document.getElementById('profile-side');
-
-        // Клик по плюсу — открыть выбор файла
-        addIcon.onclick = () => input.click();
-
-        // Загрузка файла на Cloudinary
-        input.onchange = async e => {
-          const file = e.target.files[0];
-          if (!file) return;
-          const formData = new FormData();
-          formData.append('file', file);
-          formData.append('upload_preset', CLOUDINARY_PRESET);
-          // Cloudinary unsigned upload
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-            method: 'POST',
-            body: formData
-          });
-          const data = await res.json();
-          if (data.secure_url) {
-            // Отправить PATCH/PUT на backend, чтобы сохранить новый avatarURL
-            // Добавляем window.location.origin для абсолютного URL
-            const saveRes = await fetch(window.location.origin + '/api/users/avatar', {
-              method: 'PATCH',
-              headers: {'Content-Type': 'application/json'},
-              credentials: 'include',
-              body: JSON.stringify({ avatarURL: data.secure_url })
-            });
-            if (saveRes.ok) {
-              avatarImg.src = data.secure_url;
-              showMessage('Аватарка успішно оновлена!', 'success');
-            } else {
-              showMessage('Не вдалося оновити аватарку на сервері.', 'error');
-            }
-          } else {
-            showMessage('Помилка завантаження на Cloudinary.', 'error');
-          }
-        };
-
-
-        // Клик по корзине — удалить аватарку (сбросить на дефолтную)
-        deleteBtn.onclick = async () => {
-          // Добавляем window.location.origin для абсолютного URL
-          const res = await fetch(window.location.origin + '/api/users/avatar', {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            credentials: 'include',
-            body: JSON.stringify({ avatarURL: '' }) // сервер должен сбросить на дефолтную
-          });
-          if (res.ok) {
-            avatarImg.src = '/uploads/avatars/default.png';
-            showMessage('Аватарка успішно видалена!', 'success');
-          } else {
-            showMessage('Не вдалося видалити аватарку.', 'error');
-          }
-        };
-
-        // === END Аватарка ===
-      </script>
+    </script>
+    <script src="/add_recipe_buttons.js"></script>
+    <script src="/js/user-block.js"></script>
 </body>
 </html>

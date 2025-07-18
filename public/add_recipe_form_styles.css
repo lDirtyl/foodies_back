@@ -1,0 +1,227 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F8F8F8;
+    color: #050505;
+    margin: 40px;
+}
+
+.add-recipe-container {
+    max-width: 1045px;
+    margin: 0 auto;
+}
+
+.add-recipe-header {
+    margin-bottom: 40px;
+}
+
+.add-recipe-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.add-recipe-description {
+    font-size: 14px;
+    color: rgba(5, 5, 5, 0.8);
+    max-width: 450px;
+}
+
+.add-recipe-form {
+    display: flex;
+    gap: 40px;
+}
+
+.form-left {
+    flex: 1;
+}
+
+.form-right {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.file-upload-container {
+    width: 100%;
+    height: 100%;
+    border: 2px dashed rgba(5, 5, 5, 0.2);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    min-height: 350px;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+.file-upload-label {
+    cursor: pointer;
+    text-align: center;
+}
+
+.upload-icon {
+    margin-bottom: 16px;
+}
+
+.upload-text {
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.input-with-counter {
+    position: relative;
+    width: 100%;
+}
+
+.input-with-counter input,
+.input-with-counter textarea {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid rgba(5, 5, 5, 0.2);
+    padding: 8px 0;
+    background-color: transparent;
+    font-size: 14px;
+    padding-right: 50px;
+}
+
+.input-with-counter input:focus,
+.input-with-counter textarea:focus {
+    outline: none;
+    border-bottom: 1px solid #050505;
+}
+
+.char-counter {
+    position: absolute;
+    right: 0;
+    bottom: 8px;
+    font-size: 12px;
+    color: rgba(5, 5, 5, 0.4);
+}
+
+.form-row {
+    display: flex;
+    gap: 24px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(5, 5, 5, 0.2);
+    border-radius: 15px;
+    background-color: transparent;
+    font-size: 14px;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%201.5L6%206.5L11%201.5%22%20stroke%3D%22%23050505%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.time-selector {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.time-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(5, 5, 5, 0.2);
+    border-radius: 50%;
+    background-color: transparent;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.time-value {
+    font-size: 14px;
+}
+
+#ingredients-list .ingredient-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+#ingredients-list select {
+    flex: 2;
+}
+
+#ingredients-list input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid rgba(5, 5, 5, 0.2);
+    padding: 8px 0;
+    background-color: transparent;
+    font-size: 14px;
+}
+
+.add-ingredient-btn {
+    background-color: transparent;
+    border: 1px solid #050505;
+    border-radius: 30px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-start;
+    margin-top: 8px;
+}
+
+textarea {
+    resize: none;
+    height: 80px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+}
+
+.delete-btn {
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(5, 5, 5, 0.2);
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(5, 5, 5, 0.8);
+}
+
+.publish-btn {
+    background-color: #050505;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 30px;
+    padding: 14px 40px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}

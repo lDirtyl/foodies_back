@@ -1,5 +1,16 @@
 import Joi from "joi";
 
+export const updateRecipeSchema = Joi.object({
+  title: Joi.string().min(1),
+  description: Joi.string().allow('', null),
+  instructions: Joi.string().allow('', null),
+  thumb: Joi.any(), // For file uploads
+  time: Joi.string().allow('', null),
+  categoryId: Joi.string().guid({ version: 'uuidv4' }),
+  areaId: Joi.string().guid({ version: 'uuidv4' }),
+  ingredients: Joi.any() // Can be string or array of objects
+}).min(1);
+
 export const createRecipeSchema = Joi.object({
   title: Joi.string().min(1).required(),
   description: Joi.string().allow('', null),
@@ -28,6 +39,7 @@ export const recipeIdSchema = Joi.object({
 });
 
 export const searchSchema = Joi.object({
+  keyword: Joi.string().allow('', null),
   category: Joi.string().guid({ version: 'uuidv4' }).allow(null),
   ingredient: Joi.string().allow(null),
   area: Joi.string().allow(null),

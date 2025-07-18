@@ -12,7 +12,7 @@ import {
     getUserDetailsWrapper
 } from '../controllers/usersController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import { upload, resizeAvatar } from '../middlewares/uploadMiddleware.js';
+import { avatarUploader } from '../middleware/uploadMiddleware.js';
 
 const router = express.Router();
 
@@ -20,10 +20,12 @@ router.post('/register', registerWrapper);
 router.post('/login', loginWrapper);
 router.post('/logout', authMiddleware, logoutWrapper);
 router.get('/current', authMiddleware, getCurrentUserWrapper);
-// Маршрут для оновлення аватара. Приймає JSON { avatarURL: '...' }
+
+// Route to update avatar by uploading a file
 router.patch(
     '/avatar',
     authMiddleware,
+    avatarUploader.single('avatar'),
     updateAvatarWrapper
 );
 router.get("/followers", authMiddleware, getFollowersWrapper);

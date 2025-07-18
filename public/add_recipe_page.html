@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Recipe</title>
+    <link rel="stylesheet" href="/css/add_recipe_form_styles.css">
+</head>
+<body>
+    <div class="add-recipe-container">
+        <header class="add-recipe-header">
+            <!-- Breadcrumbs can be added here if needed -->
+            <h1>ADD RECIPE</h1>
+            <p>Reveal your culinary art, share your favorite recipe and create gastronomic masterpieces with us.</p>
+        </header>
+        <form id="recipe-form" class="add-recipe-form">
+            <div class="form-left">
+                <div class="image-upload-wrapper">
+                    <label for="image-upload" class="image-upload-label">
+                        <img id="image-preview" src="#" alt="Image preview" class="image-preview" style="display: none;">
+                        <div id="upload-placeholder" class="upload-placeholder">
+                            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M44 16H48C50.2091 16 52 17.7909 52 20V48C52 50.2091 50.2091 52 48 52H16C13.7909 52 12 50.2091 12 48V20C12 17.7909 13.7909 16 16 16H20" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M32 40C36.4183 40 40 36.4183 40 32C40 27.5817 36.4183 24 32 24C27.5817 24 24 27.5817 24 32C24 36.4183 27.5817 40 32 40Z" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M20 16L24.8 8H39.2L44 16" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Upload a photo</span>
+                        </div>
+                    </label>
+                    <input type="file" id="image-upload" accept="image/*" required style="display: none;">
+                </div>
+            </div>
+            <div class="form-right">
+                <div class="form-group">
+                    <input type="text" id="recipe-title" name="title" placeholder="The name of the recipe" required maxlength="200">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="recipe-description" name="description" placeholder="Enter a description of the dish" required maxlength="200">
+                </div>
+                <div class="form-row">
+                    <div class="form-group form-group-select">
+                        <select id="recipe-category" name="category" required>
+                            <option value="" disabled selected>Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="time-selector">
+                            <button type="button" class="time-btn" id="time-minus">-</button>
+                            <span id="time-value">10 min</span>
+                            <button type="button" class="time-btn" id="time-plus">+</button>
+                        </div>
+                        <input type="hidden" id="recipe-time" name="time" value="10">
+                    </div>
+                </div>
+                <div class="form-group ingredients-section">
+                    <label>Ingredients</label>
+                    <div class="ingredient-controls">
+                        <select id="ingredient-select">
+                            <option value="" disabled selected>Add the ingredient</option>
+                        </select>
+                        <input type="text" id="ingredient-quantity" placeholder="Enter quantity">
+                        <button type="button" id="add-ingredient-btn">ADD INGREDIENT +</button>
+                    </div>
+                    <div id="selected-ingredients-list" class="selected-ingredients-list">
+                        <!-- Selected ingredients will be added here by JS -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="recipe-preparation">Recipe Preparation</label>
+                    <textarea id="recipe-preparation" name="instructions" placeholder="Enter recipe" required maxlength="200"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="delete-btn" class="delete-btn">
+                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 6V14C19 15.1046 18.1046 16 17 16H7C5.89543 16 5 15.1046 5 14V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 11V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M14 11V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 6H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 6L15.125 4.25C15.0556 4.11111 14.9201 4.02778 14.7778 4H9.22222C9.07986 4 8.94444 4.11111 8.875 4.25L8 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button type="submit" class="publish-btn">PUBLISH</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script src="/js/add_recipe_form.js"></script>
+</body>
+</html>

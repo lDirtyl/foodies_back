@@ -5,46 +5,62 @@ import RecipeIngredient from "../models/RecipeIngredient.js";
 import User from "../models/User.js";
 import HttpError from "../helpers/HttpError.js";
 
-export async function searchRecipes({
-  category,
-  ingredient,
-  area,
-  page = 1,
-  limit = 10,
-}) {
+export const searchRecipes = async ({ keyword, category, ingredient, area, page = 1, limit = 12, userId }) => {
   const filter = {};
-  if (category) filter.categoryId = category;
-  if (area) filter.areaId = area;
+  if (keyword) {
+    filter.title = { [Op.iLike]: `%${keyword}%` };
+  }
+  if (category) {
+    filter.categoryId = category;
+  }
+  if (area) {
+    filter.areaId = area;
+  }
 
   const offset = (page - 1) * limit;
 
-  // Set up the query options
-  const queryOptions = {
-    where: filter,
-    limit,
-    offset,
-  };
-
-  // If ingredient filter is specified, include the ingredient association
+  const includeOptions = [];
   if (ingredient) {
-    queryOptions.include = [
-      {
-        model: Ingredient,
-        as: "ingredients",
-        through: {
-          model: RecipeIngredient,
-        },
-        where: { id: ingredient },
-      },
-    ];
+    includeOptions.push({
+      model: Ingredient,
+      as: 'ingredients',
+      where: { id: ingredient },
+      through: { attributes: [] }, // Don't need data from the junction table here
+      required: true, // This makes it an INNER JOIN
+    });
   }
 
-  const { rows, count } = await Recipe.findAndCountAll(queryOptions);
+  includeOptions.push({
+    model: User,
+    as: 'owner',
+    attributes: ['name', 'avatarURL'],
+  });
+
+  const { rows, count } = await Recipe.findAndCountAll({
+    where: filter,
+    include: includeOptions,
+    limit,
+    offset,
+    distinct: true, // Necessary when using includes with limits
+  });
+
+  // If a user is logged in, check which recipes are favorites
+  if (userId) {
+    const user = await User.findByPk(userId);
+    if (user) {
+      const favoriteRecipes = await user.getFavorites({ attributes: ['id'] });
+      const favoriteRecipeIds = new Set(favoriteRecipes.map(r => r.id));
+      rows.forEach(recipe => {
+        recipe.dataValues.isFavorite = favoriteRecipeIds.has(recipe.id);
+      });
+    }
+  }
+
   return {
     recipes: rows,
-    pagination: { page, limit, total: count },
+    pagination: { page: parseInt(page), limit: parseInt(limit), total: count },
   };
-}
+};
 
 export async function getRecipeById(id) {
   const recipe = await Recipe.findByPk(id, {
@@ -57,6 +73,11 @@ export async function getRecipeById(id) {
           attributes: ["measure"], // Include the measure attribute from the junction table
         },
       },
+      {
+        model: User,
+        as: 'owner',
+        attributes: ['id', 'name']
+      }
     ],
   });
 
@@ -140,10 +161,11 @@ export async function getPopularRecipes({ page = 1, limit = 10 }) {
 export async function createRecipe(data, ownerId) {
   // Extract ingredients from the data
   const { ingredients, ...recipeData } = data;
+  let recipe;
 
   try {
     // Create the recipe
-    const recipe = await Recipe.create({ ...recipeData, ownerId });
+    recipe = await Recipe.create({ ...recipeData, ownerId });
 
     // If ingredients were provided, associate them with the recipe
     if (ingredients && ingredients.length > 0) {
@@ -163,6 +185,32 @@ export async function createRecipe(data, ownerId) {
 
   // Return the newly created recipe with its ingredients
   return getRecipeById(recipe.id);
+}
+
+export async function updateRecipe(id, ownerId, data) {
+  const recipe = await Recipe.findByPk(id);
+  if (!recipe) {
+    throw HttpError(404, "Recipe not found");
+  }
+  if (recipe.ownerId !== ownerId) {
+    throw HttpError(403, "Not authorized to edit this recipe");
+  }
+
+  const { ingredients, ...recipeData } = data;
+
+  await recipe.update(recipeData);
+
+  if (ingredients) {
+    await RecipeIngredient.destroy({ where: { recipeId: id } });
+    const recipeIngredients = ingredients.map(({ id: ingredientId, measure }) => ({
+      recipeId: recipe.id,
+      ingredientId,
+      measure,
+    }));
+    await RecipeIngredient.bulkCreate(recipeIngredients);
+  }
+
+  return getRecipeById(id);
 }
 
 export async function deleteRecipe(id, ownerId) {

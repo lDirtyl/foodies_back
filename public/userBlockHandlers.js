@@ -78,6 +78,11 @@ function attachLoggedInHandlers(user) {
             }
         };
     }
+
+    // Инициализируем кнопку добавления рецепта, так как она теперь в DOM
+    if (window.initAddRecipeButton) {
+        window.initAddRecipeButton();
+    }
 }
 
 /**
