@@ -46,6 +46,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    const formatImageUrl = (url) => {
+        if (!url) return 'img/default-recipe.jpg'; // Default image if URL is null
+
+        // If it's a full URL (like from Cloudinary), use it as is
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            // But if it's an old localhost URL, strip the domain and '/public'
+            if (url.includes('localhost:3000/public')) {
+                return url.split('localhost:3000/public')[1];
+            }
+            return url;
+        }
+
+        // If it's already a relative path, use it
+        return url;
+    };
+
     const renderRecipes = (recipes, append = false) => {
         if (!append) {
             recipeListGrid.innerHTML = '';
@@ -59,10 +75,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         recipes.forEach(recipe => {
             const card = document.createElement('div');
-            card.className = 'recipe-card';
+            card.className = 'recipe-card-new'; // Use a new class for new styles
+
+            const ownerName = recipe.owner ? recipe.owner.name : 'Anonymous';
+            const ownerAvatar = recipe.owner ? formatImageUrl(recipe.owner.avatarURL) : 'img/default-avatar.png';
+            const recipeImage = formatImageUrl(recipe.thumb);
+            // Truncate description for preview
+            const description = recipe.description ? recipe.description.substring(0, 70) + '...' : 'No description available.';
+
             card.innerHTML = `
-                <img src="${recipe.thumb || 'img/default-recipe.jpg'}" alt="${recipe.title}">
-                <h3>${recipe.title}</h3>
+                <div class="recipe-card-image-container">
+                    <img src="${recipeImage}" alt="${recipe.title}">
+                </div>
+                <div class="recipe-card-content">
+                    <h5>${recipe.title}</h5>
+                    <p>${description}</p>
+                    <div class="recipe-card-footer">
+                        <div class="recipe-author">
+                            <img src="${ownerAvatar}" alt="${ownerName}" class="author-avatar">
+                            <span>${ownerName}</span>
+                        </div>
+                        <div class="recipe-actions">
+                            <button class="action-btn like-btn" data-recipe-id="${recipe.id}">🤍</button>
+                            <button class="action-btn details-btn" data-recipe-id="${recipe.id}">↗</button>
+                        </div>
+                    </div>
+                </div>
             `;
             recipeListGrid.appendChild(card);
         });

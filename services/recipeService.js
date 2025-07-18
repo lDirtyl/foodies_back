@@ -30,6 +30,12 @@ export const searchRecipes = async ({ keyword, category, ingredient, area, page 
     });
   }
 
+  includeOptions.push({
+    model: User,
+    as: 'owner',
+    attributes: ['name', 'avatarURL'],
+  });
+
   const { rows, count } = await Recipe.findAndCountAll({
     where: filter,
     include: includeOptions,
