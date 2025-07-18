@@ -7,8 +7,8 @@ const getAllIngredients = async (req, res, next) => {
   const { error, value } = paginationSchema.validate(req.query);
   if (error) throw HttpError(400, error.message);
   const { page, limit } = value;
-  const { name, categoryId } = req.query;
-  const result = await ingredientsService.getAllIngredients(page, limit, name, categoryId);
+  const { name, categoryId, areaId } = req.query;
+  const result = await ingredientsService.getAllIngredients(page, limit, name, categoryId, areaId);
   res.json(result);
 };
 

@@ -1,32 +1,46 @@
 import { Op } from "sequelize";
 import { Ingredient, Recipe, RecipeIngredient } from "../models/index.js";
 
-export async function getAllIngredients(page, limit, name, categoryId) {
+export async function getAllIngredients(page, limit, name, categoryId, areaId) {
   const offset = (page - 1) * limit;
   const filter = {};
+
   if (name) {
     filter.name = { [Op.iLike]: `%${name}%` };
   }
 
-  let ingredientIds = null;
-
   if (categoryId) {
-    // 1. Find all recipes in the given category
+    const recipeFilter = { categoryId };
+    if (areaId) {
+      recipeFilter.areaId = areaId;
+    }
     const recipes = await Recipe.findAll({
-      where: { categoryId },
+      where: recipeFilter,
       attributes: ['id'],
     });
     const recipeIds = recipes.map(r => r.id);
 
-    // 2. Find all unique ingredient IDs from those recipes
+    if (recipeIds.length === 0) {
+      return {
+        ingredients: [],
+        pagination: { page: parseInt(page), limit: parseInt(limit), total: 0 },
+      };
+    }
+
     const recipeIngredients = await RecipeIngredient.findAll({
       where: { recipeId: { [Op.in]: recipeIds } },
       attributes: ['ingredientId'],
       group: ['ingredientId'],
     });
-    ingredientIds = recipeIngredients.map(ri => ri.ingredientId);
+    const ingredientIds = recipeIngredients.map(ri => ri.ingredientId);
 
-    // Add this to the main filter
+    if (ingredientIds.length === 0) {
+        return {
+            ingredients: [],
+            pagination: { page: parseInt(page), limit: parseInt(limit), total: 0 },
+        };
+    }
+
     filter.id = { [Op.in]: ingredientIds };
   }
 
