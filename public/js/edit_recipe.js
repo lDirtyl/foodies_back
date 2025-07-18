@@ -59,9 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const { categories } = await response.json();
             categories.forEach(cat => {
                 const option = document.createElement('option');
-                option.value = cat._id;
+                option.value = cat.id;
                 option.textContent = cat.name;
-                if (cat._id === selectedCategoryId) {
+                if (cat.id === selectedCategoryId) {
                     option.selected = true;
                 }
                 recipeCategory.appendChild(option);
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { ingredients } = await response.json();
             ingredients.forEach(ing => {
                 const option = document.createElement('option');
-                option.value = ing._id;
+                option.value = ing.id;
                 option.textContent = ing.name;
                 ingredientSelect.appendChild(option);
             });

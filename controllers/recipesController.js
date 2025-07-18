@@ -58,9 +58,18 @@ const updateRecipe = async (req, res, next) => {
   const { id } = req.params;
   const ownerId = req.user.id;
 
-  const { error } = updateRecipeSchema.validate(req.body);
-  if (error) {
-    throw HttpError(400, error.message);
+  const { error: paramsError } = recipeIdSchema.validate(req.params);
+  if (paramsError) {
+    throw HttpError(400, paramsError.message);
+  }
+
+  const { error: bodyError } = updateRecipeSchema.validate(req.body);
+  if (bodyError) {
+    throw HttpError(400, bodyError.message);
+  }
+
+  if (req.file) {
+    req.body.thumb = req.file.path; // Add image URL from Cloudinary if a new one was uploaded
   }
 
   // Ensure ingredients are parsed if they are a JSON string
