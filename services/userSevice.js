@@ -63,6 +63,16 @@ export async function loginUser({ email, password }) {
   };
 }
 
+export async function getCurrentUser(userId) {
+  const user = await User.findByPk(userId, {
+    attributes: ['id', 'name', 'email', 'avatarURL']
+  });
+  if (!user) {
+    throw HttpError(401, "Not authorized");
+  }
+  return user;
+}
+
 export async function logoutUser(userId) {
   const user = await User.findByPk(userId);
   if (!user) throw HttpError(401, "Not authorized");

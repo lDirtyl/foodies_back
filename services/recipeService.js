@@ -73,6 +73,11 @@ export async function getRecipeById(id) {
           attributes: ["measure"], // Include the measure attribute from the junction table
         },
       },
+      {
+        model: User,
+        as: 'owner',
+        attributes: ['id', 'name']
+      }
     ],
   });
 
@@ -180,6 +185,32 @@ export async function createRecipe(data, ownerId) {
 
   // Return the newly created recipe with its ingredients
   return getRecipeById(recipe.id);
+}
+
+export async function updateRecipe(id, ownerId, data) {
+  const recipe = await Recipe.findByPk(id);
+  if (!recipe) {
+    throw HttpError(404, "Recipe not found");
+  }
+  if (recipe.ownerId !== ownerId) {
+    throw HttpError(403, "Not authorized to edit this recipe");
+  }
+
+  const { ingredients, ...recipeData } = data;
+
+  await recipe.update(recipeData);
+
+  if (ingredients) {
+    await RecipeIngredient.destroy({ where: { recipeId: id } });
+    const recipeIngredients = ingredients.map(({ id: ingredientId, measure }) => ({
+      recipeId: recipe.id,
+      ingredientId,
+      measure,
+    }));
+    await RecipeIngredient.bulkCreate(recipeIngredients);
+  }
+
+  return getRecipeById(id);
 }
 
 export async function deleteRecipe(id, ownerId) {

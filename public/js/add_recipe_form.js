@@ -34,9 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
+            const items = Array.isArray(data) ? data : (data.categories || data.ingredients);
+
+            if (!items) {
+                console.error('Could not find an array to populate dropdown from response:', data);
+                return;
+            }
             
             selectElement.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
-            data.forEach(item => {
+            items.forEach(item => {
                 const option = document.createElement('option');
                 option.value = item._id || item.id; // Adjust based on your API response
                 option.textContent = item.name;
@@ -118,8 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData();
         formData.append('title', document.getElementById('recipe-title').value);
+        formData.append('categoryId', document.getElementById('recipe-category').value);
         formData.append('description', document.getElementById('recipe-description').value);
-        formData.append('category', categorySelect.value);
         formData.append('time', recipeTimeInput.value);
         formData.append('instructions', document.getElementById('recipe-preparation').value);
         formData.append('ingredients', JSON.stringify(selectedIngredients));
@@ -144,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             alert('Recipe created successfully!');
-            window.location.href = `/recipe_page.html?id=${result._id}`; // Redirect to the new recipe page
+            window.location.href = '/user_page.html'; // Redirect to the user's profile page
 
         } catch (error) {
             console.error('Error creating recipe:', error);

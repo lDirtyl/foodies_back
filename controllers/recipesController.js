@@ -2,7 +2,7 @@ import * as recipeService from '../services/recipeService.js';
 import controllerWrapper from '../helpers/controllerWrapper.js';
 import HttpError from '../helpers/HttpError.js';
 import { paginationSchema } from '../schemas/paginationSchema.js';
-import { recipeIdSchema, searchSchema, createRecipeSchema } from '../schemas/recipeSchema.js';
+import { recipeIdSchema, searchSchema, createRecipeSchema, updateRecipeSchema } from '../schemas/recipeSchema.js';
 
 const searchRecipes = async (req, res, next) => {
   const { error, value } = searchSchema.validate(req.query);
@@ -46,10 +46,34 @@ const createRecipe = async (req, res, next) => {
 
   if (req.file) {
     value.thumb = req.file.path; // Add image URL from Cloudinary
+  } else {
+    value.thumb = '/images/standart.jfif'; // Set default image
   }
 
   const recipe = await recipeService.createRecipe(value, ownerId);
   res.status(201).json(recipe);
+};
+
+const updateRecipe = async (req, res, next) => {
+  const { id } = req.params;
+  const ownerId = req.user.id;
+
+  const { error } = updateRecipeSchema.validate(req.body);
+  if (error) {
+    throw HttpError(400, error.message);
+  }
+
+  // Ensure ingredients are parsed if they are a JSON string
+  if (req.body.ingredients && typeof req.body.ingredients === 'string') {
+    try {
+      req.body.ingredients = JSON.parse(req.body.ingredients);
+    } catch (e) {
+      throw HttpError(400, 'Invalid ingredients JSON format');
+    }
+  }
+
+  const updatedRecipe = await recipeService.updateRecipe(id, ownerId, req.body);
+  res.json(updatedRecipe);
 };
 
 const deleteRecipe = async (req, res, next) => {
@@ -109,6 +133,7 @@ export const searchRecipesWrapper = controllerWrapper(searchRecipes);
 export const getRecipeByIdWrapper = controllerWrapper(getRecipeById);
 export const getPopularRecipesWrapper = controllerWrapper(getPopularRecipes);
 export const createRecipeWrapper = controllerWrapper(createRecipe);
+export const updateRecipeWrapper = controllerWrapper(updateRecipe);
 export const deleteRecipeWrapper = controllerWrapper(deleteRecipe);
 export const getOwnRecipesWrapper = controllerWrapper(getOwnRecipes);
 export const addFavoriteWrapper = controllerWrapper(addFavorite);

@@ -8,11 +8,13 @@ import {
   deleteRecipeWrapper,
   addFavoriteWrapper,
   removeFavoriteWrapper,
-  getFavoriteRecipesWrapper
+  getFavoriteRecipesWrapper,
+  updateRecipeWrapper
 } from '../controllers/recipesController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import optionalAuthMiddleware from '../middlewares/optionalAuthMiddleware.js';
-import { upload } from '../middlewares/uploadMiddleware.js';
+import { upload } from "../middlewares/uploadMiddleware.js";
+import cloudinaryMiddleware from '../middlewares/cloudinaryMiddleware.js';
 
 const router = express.Router();
 
@@ -22,8 +24,10 @@ router.get('/popular', getPopularRecipesWrapper);
 router.get('/:id', getRecipeByIdWrapper);
 router.get('/', optionalAuthMiddleware, searchRecipesWrapper);
 
-router.post('/', authMiddleware, upload.single('thumb'), createRecipeWrapper);
-router.delete('/:id', authMiddleware, deleteRecipeWrapper);
+router.post('/', authMiddleware, upload.single('thumb'), cloudinaryMiddleware, createRecipeWrapper);
+router.put("/:id", authMiddleware, upload.single('thumb'), cloudinaryMiddleware, updateRecipeWrapper);
+
+router.delete("/:id", authMiddleware, deleteRecipeWrapper);
 router.post('/:id/favorite', authMiddleware, addFavoriteWrapper);
 router.delete('/:id/favorite', authMiddleware, removeFavoriteWrapper);
 

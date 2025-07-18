@@ -27,4 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initial Load ---
     setupNavigation();
+
+    // --- Recipe Card Details Button ---
+    document.body.addEventListener('click', (e) => {
+        const detailsButton = e.target.closest('.details-btn');
+        if (detailsButton) {
+            const recipeId = detailsButton.dataset.recipeId;
+            if (recipeId) {
+                window.location.href = `/recipe_page.html?id=${recipeId}`;
+            }
+        }
+    });
 });

@@ -2,211 +2,160 @@ document.addEventListener('DOMContentLoaded', () => {
     const addRecipeModal = document.getElementById('add-recipe-modal');
     if (!addRecipeModal) return;
 
-    const closeModalBtn = addRecipeModal.querySelector('.modal-close-btn');
-    const form = document.getElementById('recipe-form-modal');
-    const imageUpload = document.getElementById('image-upload-modal');
-    const imagePreview = document.getElementById('image-preview-modal');
-    const uploadPlaceholder = document.getElementById('upload-placeholder-modal');
-    const categorySelect = document.getElementById('recipe-category-modal');
-    const ingredientSelect = document.getElementById('ingredient-select-modal');
-    const timeValueSpan = document.getElementById('time-value-modal');
-    const timeMinusBtn = document.getElementById('time-minus-modal');
-    const timePlusBtn = document.getElementById('time-plus-modal');
-    const recipeTimeInput = document.getElementById('recipe-time-modal');
-    const addIngredientBtn = document.getElementById('add-ingredient-btn-modal');
-    const selectedIngredientsList = document.getElementById('selected-ingredients-list-modal');
-    const ingredientsList = document.getElementById('ingredients-list-modal');
-    const addIngredientSelectorBtn = document.getElementById('add-ingredient-selector-btn-modal');
+    const initializeModal = () => {
+        const closeModalBtn = addRecipeModal.querySelector('.modal-close-btn');
+        const form = document.getElementById('recipe-form-modal');
+        const imageUpload = document.getElementById('image-upload-modal');
+        const imagePreview = document.getElementById('image-preview-modal');
+        const uploadPlaceholder = document.getElementById('upload-placeholder-modal');
+        const categorySelect = document.getElementById('recipe-category-modal');
+        const ingredientSelect = document.getElementById('ingredient-select-modal');
+        const timeValueSpan = document.getElementById('time-value-modal');
+        const timeMinusBtn = document.getElementById('time-minus-modal');
+        const timePlusBtn = document.getElementById('time-plus-modal');
+        const recipeTimeInput = document.getElementById('recipe-time-modal');
+        const addIngredientBtn = document.getElementById('add-ingredient-btn-modal');
+        const selectedIngredientsList = document.getElementById('selected-ingredients-list-modal');
 
-    let selectedIngredients = [];
-
-    // Function to open the modal
-    window.openAddRecipeModal = () => {
-        addRecipeModal.style.display = 'flex';
-        // Fetch data only if not already loaded
-        if (categorySelect.options.length <= 1) {
-            fetchData('/api/categories', categorySelect, 'Category');
-            fetchData('/api/ingredients', ingredientSelect, 'Add the ingredient');
+        if (!form || !closeModalBtn) {
+            console.error('Core modal elements (form, close button) not found.');
+            return;
         }
-    };
 
-    // Function to close the modal
-    const closeModal = () => {
-        addRecipeModal.style.display = 'none';
-    };
+        let selectedIngredients = [];
 
-    closeModalBtn.addEventListener('click', closeModal);
-    addRecipeModal.addEventListener('click', (e) => {
-        if (e.target === addRecipeModal) {
-            closeModal();
-        }
-    });
+        const closeModal = () => {
+            addRecipeModal.classList.remove('display-flex');
+            addRecipeModal.classList.add('display-none');
+        };
 
-    // 1. Image Preview
-    imageUpload.addEventListener('change', () => {
-        const file = imageUpload.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-                uploadPlaceholder.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+        closeModalBtn.addEventListener('click', closeModal);
+        addRecipeModal.addEventListener('click', (e) => {
+            if (e.target === addRecipeModal) closeModal();
+        });
 
-    // 2. Fetch Categories and Ingredients
-    async function fetchData(url, selectElement, placeholder) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const data = await response.json();
-            
-            selectElement.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
-            data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item._id || item.id;
-                option.textContent = item.name;
-                selectElement.appendChild(option);
-            });
-        } catch (error) {
-            console.error(`Failed to fetch ${placeholder}:`, error);
-        }
-    }
+        imageUpload.addEventListener('change', () => {
+            const file = imageUpload.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    uploadPlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-    // 3. Time Selector
-    let currentTime = 10;
-    timeMinusBtn.addEventListener('click', () => {
-        if (currentTime > 5) {
-            currentTime -= 5;
+        let currentTime = 10;
+        timeMinusBtn.addEventListener('click', () => {
+            if (currentTime > 5) {
+                currentTime -= 5;
+                timeValueSpan.textContent = `${currentTime} min`;
+                recipeTimeInput.value = currentTime;
+            }
+        });
+
+        timePlusBtn.addEventListener('click', () => {
+            currentTime += 5;
             timeValueSpan.textContent = `${currentTime} min`;
             recipeTimeInput.value = currentTime;
-        }
-    });
-
-    timePlusBtn.addEventListener('click', () => {
-        currentTime += 5;
-        timeValueSpan.textContent = `${currentTime} min`;
-        recipeTimeInput.value = currentTime;
-    });
-
-    // 4. Manage Ingredients
-    addIngredientBtn.addEventListener('click', () => {
-        const ingredientId = ingredientSelect.value;
-        const ingredientName = ingredientSelect.options[ingredientSelect.selectedIndex].text;
-        const quantity = document.getElementById('ingredient-quantity-modal').value.trim();
-
-        if (!ingredientId || !quantity) {
-            alert('Please select an ingredient and enter a quantity.');
-            return;
-        }
-
-        if (selectedIngredients.some(ing => ing.id === ingredientId)) {
-            alert('This ingredient has already been added.');
-            return;
-        }
-
-        selectedIngredients.push({ id: ingredientId, measure: quantity });
-        renderSelectedIngredients();
-        
-        ingredientSelect.value = '';
-        document.getElementById('ingredient-quantity-modal').value = '';
-    });
-
-    function renderSelectedIngredients() {
-        selectedIngredientsList.innerHTML = '';
-        selectedIngredients.forEach((ing, index) => {
-            const ingredientName = document.querySelector(`#ingredient-select-modal option[value="${ing.id}"]`).textContent;
-            const tag = document.createElement('div');
-            tag.className = 'ingredient-tag';
-            tag.innerHTML = `
-                <span>${ingredientName} - ${ing.measure}</span>
-                <button type="button" class="remove-ingredient-btn" data-index="${index}">×</button>
-            `;
-            selectedIngredientsList.appendChild(tag);
         });
-    }
 
-    selectedIngredientsList.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-ingredient-btn')) {
-            const index = e.target.dataset.index;
-            selectedIngredients.splice(index, 1);
+        addIngredientBtn.addEventListener('click', () => {
+            const ingredientId = ingredientSelect.value;
+            const quantity = document.getElementById('ingredient-quantity-modal').value.trim();
+
+            if (!ingredientId || !quantity) return alert('Please select an ingredient and enter a quantity.');
+            if (selectedIngredients.some(ing => ing.id === ingredientId)) return alert('This ingredient has already been added.');
+
+            selectedIngredients.push({ id: ingredientId, measure: quantity });
             renderSelectedIngredients();
+            ingredientSelect.value = '';
+            document.getElementById('ingredient-quantity-modal').value = '';
+        });
+
+        function renderSelectedIngredients() {
+            selectedIngredientsList.innerHTML = '';
+            selectedIngredients.forEach((ing, index) => {
+                const option = document.querySelector(`#ingredient-select-modal option[value="${ing.id}"]`);
+                const ingredientName = option ? option.textContent : 'Unknown Ingredient';
+                const tag = document.createElement('div');
+                tag.className = 'ingredient-tag';
+                tag.innerHTML = `<span>${ingredientName} - ${ing.measure}</span><button type="button" class="remove-ingredient-btn" data-index="${index}">×</button>`;
+                selectedIngredientsList.appendChild(tag);
+            });
         }
-    });
 
-    const addIngredientSelector = async () => {
-        const row = document.createElement('div');
-        row.className = 'ingredient-row';
+        selectedIngredientsList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-ingredient-btn')) {
+                selectedIngredients.splice(e.target.dataset.index, 1);
+                renderSelectedIngredients();
+            }
+        });
 
-        const select = document.createElement('select');
-        select.name = 'ingredient-name';
-        await fetchData('/api/ingredients', select, 'Select an ingredient');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('title', document.getElementById('recipe-title-modal').value);
+            formData.append('description', document.getElementById('recipe-description-modal').value);
+            formData.append('categoryId', categorySelect.value);
+            formData.append('time', recipeTimeInput.value);
+            formData.append('instructions', document.getElementById('recipe-preparation-modal').value);
+            formData.append('ingredients', JSON.stringify(selectedIngredients));
+            if (imageUpload.files[0]) formData.append('thumb', imageUpload.files[0]);
 
-        const quantityInput = document.createElement('input');
-        quantityInput.type = 'text';
-        quantityInput.name = 'ingredient-quantity';
-        quantityInput.placeholder = 'Enter quantity';
+            try {
+                const response = await fetch('/api/recipes', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                    body: formData
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Failed to create recipe');
+                alert('Recipe created successfully!');
+                closeModal();
+                window.location.reload(); // Reload to see the new recipe on the main page
+            } catch (error) {
+                console.error('Error creating recipe:', error);
+                alert(`Error: ${error.message}`);
+            }
+        });
 
-        row.appendChild(select);
-        row.appendChild(quantityInput);
-        ingredientsList.appendChild(row);
+        async function fetchData(url, selectElement, placeholder) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                const items = Array.isArray(data) ? data : (data.categories || data.ingredients);
+
+                if (!items) {
+                    console.error('Could not find an array to populate dropdown from response:', data);
+                    return;
+                }
+
+                selectElement.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
+                items.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item._id || item.id;
+                    option.textContent = item.name;
+                    selectElement.appendChild(option);
+                });
+            } catch (error) {
+                console.error(`Failed to fetch ${placeholder}:`, error);
+            }
+        }
+
+        // Initial data fetch
+        fetchData('/api/categories', categorySelect, 'Category');
+        fetchData('/api/ingredients', ingredientSelect, 'Add the ingredient');
     };
 
-    addIngredientSelectorBtn.addEventListener('click', addIngredientSelector);
+    // Global function to open the modal
+    window.openAddRecipeModal = () => {
+        addRecipeModal.classList.remove('display-none');
+        addRecipeModal.classList.add('display-flex');
+    };
 
-    // 5. Form Submission
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('title', document.getElementById('recipe-title-modal').value);
-        formData.append('description', document.getElementById('recipe-description-modal').value);
-        formData.append('category', categorySelect.value);
-        formData.append('time', recipeTimeInput.value);
-        formData.append('instructions', document.getElementById('recipe-preparation-modal').value);
-        formData.append('ingredients', JSON.stringify(selectedIngredients));
-
-        const ingredientNames = [];
-        const ingredientQuantities = [];
-        const ingredientRows = ingredientsList.children;
-        for (let i = 0; i < ingredientRows.length; i++) {
-            const row = ingredientRows[i];
-            const select = row.querySelector('select');
-            const input = row.querySelector('input');
-            ingredientNames.push(select.value);
-            ingredientQuantities.push(input.value);
-        }
-        formData.append('ingredientNames', JSON.stringify(ingredientNames));
-        formData.append('ingredientQuantities', JSON.stringify(ingredientQuantities));
-
-        if (imageUpload.files[0]) {
-            formData.append('thumb', imageUpload.files[0]);
-        }
-
-        try {
-            const response = await fetch('/api/recipes', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.message || 'Failed to create recipe');
-            }
-
-            alert('Recipe created successfully!');
-            closeModal();
-            window.location.href = `/recipe_page.html?id=${result._id}`;
-
-        } catch (error) {
-            console.error('Error creating recipe:', error);
-            alert(`Error: ${error.message}`);
-        }
-    });
+    initializeModal();
 });

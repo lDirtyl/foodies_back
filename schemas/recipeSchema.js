@@ -1,5 +1,15 @@
 import Joi from "joi";
 
+export const updateRecipeSchema = Joi.object({
+  title: Joi.string(),
+  description: Joi.string(),
+  categoryId: Joi.string(),
+  time: Joi.string(),
+  ingredients: Joi.any(), // Can be string or array
+  instructions: Joi.string(),
+  thumb: Joi.any() // For file uploads
+}).min(1); // Require at least one field to be updated
+
 export const createRecipeSchema = Joi.object({
   title: Joi.string().min(1).required(),
   description: Joi.string().allow('', null),

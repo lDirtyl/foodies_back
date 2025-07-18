@@ -24,7 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const displayRecipe = (recipe) => {
+    const displayRecipe = async (recipe) => {
+        let currentUser = null;
+        if (token) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/current`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) currentUser = await response.json();
+            } catch (error) {
+                console.error('Error fetching current user:', error);
+            }
+        }
         const clone = template.content.cloneNode(true);
 
         clone.getElementById('recipe-title').textContent = recipe.title;
@@ -48,6 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
             addToFavoritesBtn.addEventListener('click', () => addToFavorites(recipe.id));
         } else {
             addToFavoritesBtn.classList.add('hidden');
+        }
+
+                const editRecipeBtn = clone.getElementById('edit-recipe-btn');
+        if (currentUser && recipe.owner && currentUser.id === recipe.owner.id) {
+            editRecipeBtn.style.display = 'block';
+            editRecipeBtn.addEventListener('click', () => {
+                window.location.href = `/edit_recipe_page.html?id=${recipe.id}`;
+            });
         }
 
         recipeContainer.appendChild(clone);

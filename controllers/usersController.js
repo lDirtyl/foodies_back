@@ -56,9 +56,8 @@ const logout = async (req, res, next) => {
 };
 
 const getCurrentUser = async (req, res) => {
-  // Используем новый сервис для получения полной информации
-  const userDetails = await userService.getUserDetails(req.user.id);
-  res.status(200).json(userDetails);
+  const user = await userService.getCurrentUser(req.user.id);
+  res.status(200).json(user);
 };
 
 const updateAvatar = async (req, res) => {
