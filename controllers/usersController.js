@@ -56,8 +56,9 @@ const logout = async (req, res, next) => {
 };
 
 const getCurrentUser = async (req, res) => {
-  const { id, name, email, avatarURL } = req.user;
-  res.json({ id, name, email, avatarURL });
+  // Используем новый сервис для получения полной информации
+  const userDetails = await userService.getUserDetails(req.user.id);
+  res.status(200).json(userDetails);
 };
 
 const updateAvatar = async (req, res) => {
@@ -111,13 +112,11 @@ const unfollowUser = async (req, res) => {
 };
 
 const getUserDetails = async (req, res) => {
-  const currentUserId = req.user.id;
+  // ID целевого пользователя берется из параметров URL
   const targetUserId = req.params.userId;
 
-  const userDetails = await userService.getUserDetails(
-    currentUserId,
-    targetUserId
-  );
+  // Используем новый сервис для получения полной информации
+  const userDetails = await userService.getUserDetails(targetUserId);
   res.status(200).json(userDetails);
 };
 

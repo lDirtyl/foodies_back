@@ -9,7 +9,8 @@ const searchRecipes = async (req, res, next) => {
   if (error) throw HttpError(400, error.message);
   
   const { keyword, category, ingredient, area, page, limit } = value;
-  const result = await recipeService.searchRecipes({ keyword, category, ingredient, area, page, limit });
+  const userId = req.user ? req.user.id : null;
+  const result = await recipeService.searchRecipes({ keyword, category, ingredient, area, page, limit, userId });
   res.json(result);
 };
 

@@ -274,60 +274,78 @@
 
     <!-- Add Recipe Modal -->
     <div id="add-recipe-modal" class="modal-overlay">
-        <div class="modal add-recipe-container">
+        <div class="modal add-recipe-modal-content">
             <button class="modal-close-btn">&times;</button>
-            <div class="add-recipe-header">
-                <h1 class="add-recipe-title">ADD RECIPE</h1>
-                <p class="add-recipe-description">Reveal your culinary art, share your favorite recipe and create gastronomic masterpieces with us.</p>
-            </div>
+            <header class="add-recipe-header">
+                <h1>ADD RECIPE</h1>
+                <p>Reveal your culinary art, share your favorite recipe and create gastronomic masterpieces with us.</p>
+            </header>
             <form id="recipe-form-modal" class="add-recipe-form">
                 <div class="form-left">
-                    <div class="file-upload-container">
-                        <input type="file" id="image-upload-modal" class="file-upload-input" accept="image/*">
-                        <label for="image-upload-modal" class="file-upload-label">
-                            <svg class="upload-icon" width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M44 16H48C50.2091 16 52 17.7909 52 20V48C52 50.2091 50.2091 52 48 52H16C13.7909 52 12 50.2091 12 48V20C12 17.7909 13.7909 16 16 16H20" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M32 40C36.4183 40 40 36.4183 40 32C40 27.5817 36.4183 24 32 24C27.5817 24 24 27.5817 24 32C24 36.4183 27.5817 40 32 40Z" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M20 16L24.8 8H39.2L44 16" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span class="upload-text">Upload a photo</span>
+                    <div class="image-upload-wrapper">
+                        <label for="image-upload-modal" class="image-upload-label">
+                            <img id="image-preview-modal" src="#" alt="Image preview" class="image-preview" style="display: none;">
+                            <div id="upload-placeholder-modal" class="upload-placeholder">
+                                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M44 16H48C50.2091 16 52 17.7909 52 20V48C52 50.2091 50.2091 52 48 52H16C13.7909 52 12 50.2091 12 48V20C12 17.7909 13.7909 16 16 16H20" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M32 40C36.4183 40 40 36.4183 40 32C40 27.5817 36.4183 24 32 24C27.5817 24 24 27.5817 24 32C24 36.4183 27.5817 40 32 40Z" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M20 16L24.8 8H39.2L44 16" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>Upload a photo</span>
+                            </div>
                         </label>
+                        <input type="file" id="image-upload-modal" accept="image/*" required style="display: none;">
                     </div>
                 </div>
                 <div class="form-right">
                     <div class="form-group">
-                        <label for="recipe-name-modal">THE NAME OF THE RECIPE</label>
-                        <input type="text" id="recipe-name-modal" name="title" placeholder="Enter a description of the dish" maxlength="200">
+                        <input type="text" id="recipe-title-modal" name="title" placeholder="The name of the recipe" required maxlength="200">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="recipe-description-modal" name="description" placeholder="Enter a description of the dish" required maxlength="200">
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="recipe-category-modal">CATEGORY</label>
-                            <select id="recipe-category-modal" name="category">
-                                <option value="" disabled selected>Select a category</option>
+                        <div class="form-group form-group-select">
+                            <select id="recipe-category-modal" name="category" required>
+                                <option value="" disabled selected>Category</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="recipe-time-modal">COOKING TIME</label>
-                             <input type="text" id="recipe-time-modal" name="time" placeholder="e.g., 25min">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>INGREDIENTS</label>
-                        <div id="ingredients-list-modal">
-                            <div class="ingredient-row">
-                                <select name="ingredient-name">
-                                    <option value="" disabled selected>Add the ingredient</option>
-                                </select>
-                                <input type="text" name="ingredient-quantity" placeholder="Enter quantity">
+                            <div class="time-selector">
+                                <button type="button" class="time-btn" id="time-minus-modal">-</button>
+                                <span id="time-value-modal">10 min</span>
+                                <button type="button" class="time-btn" id="time-plus-modal">+</button>
                             </div>
+                            <input type="hidden" id="recipe-time-modal" name="time" value="10">
                         </div>
-                        <button type="button" id="add-ingredient-modal" class="add-ingredient-btn">ADD INGREDIENT +</button>
+                    </div>
+                    <div class="form-group ingredients-section">
+                        <label>Ingredients</label>
+                        <div class="ingredient-controls">
+                            <select id="ingredient-select-modal">
+                                <option value="" disabled selected>Add the ingredient</option>
+                            </select>
+                            <input type="text" id="ingredient-quantity-modal" placeholder="Enter quantity">
+                            <button type="button" id="add-ingredient-btn-modal">ADD INGREDIENT +</button>
+                        </div>
+                        <div id="selected-ingredients-list-modal" class="selected-ingredients-list">
+                            <!-- Selected ingredients will be added here by JS -->
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="recipe-prep-modal">RECIPE PREPARATION</label>
-                        <textarea id="recipe-prep-modal" name="description" placeholder="Enter recipe" maxlength="200"></textarea>
+                        <label for="recipe-preparation-modal">Recipe Preparation</label>
+                        <textarea id="recipe-preparation-modal" name="instructions" placeholder="Enter recipe" required maxlength="200"></textarea>
                     </div>
                     <div class="form-actions">
+                        <button type="button" id="delete-btn-modal" class="delete-btn">
+                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 6V14C19 15.1046 18.1046 16 17 16H7C5.89543 16 5 15.1046 5 14V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10 11V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M14 11V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 6L15.125 4.25C15.0556 4.11111 14.9201 4.02778 14.7778 4H9.22222C9.07986 4 8.94444 4.11111 8.875 4.25L8 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                         <button type="submit" class="publish-btn">PUBLISH</button>
                     </div>
                 </div>

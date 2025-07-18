@@ -1,46 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const addRecipeModal = document.getElementById('add-recipe-modal');
-    if (!addRecipeModal) return;
-
-    const closeModalBtn = addRecipeModal.querySelector('.modal-close-btn');
-    const form = document.getElementById('recipe-form-modal');
-    const imageUpload = document.getElementById('image-upload-modal');
-    const imagePreview = document.getElementById('image-preview-modal');
-    const uploadPlaceholder = document.getElementById('upload-placeholder-modal');
-    const categorySelect = document.getElementById('recipe-category-modal');
-    const ingredientSelect = document.getElementById('ingredient-select-modal');
-    const timeValueSpan = document.getElementById('time-value-modal');
-    const timeMinusBtn = document.getElementById('time-minus-modal');
-    const timePlusBtn = document.getElementById('time-plus-modal');
-    const recipeTimeInput = document.getElementById('recipe-time-modal');
-    const addIngredientBtn = document.getElementById('add-ingredient-btn-modal');
-    const selectedIngredientsList = document.getElementById('selected-ingredients-list-modal');
-    const ingredientsList = document.getElementById('ingredients-list-modal');
-    const addIngredientSelectorBtn = document.getElementById('add-ingredient-selector-btn-modal');
+    const form = document.getElementById('recipe-form');
+    const imageUpload = document.getElementById('image-upload');
+    const imagePreview = document.getElementById('image-preview');
+    const uploadPlaceholder = document.getElementById('upload-placeholder');
+    const categorySelect = document.getElementById('recipe-category');
+    const ingredientSelect = document.getElementById('ingredient-select');
+    const timeValueSpan = document.getElementById('time-value');
+    const timeMinusBtn = document.getElementById('time-minus');
+    const timePlusBtn = document.getElementById('time-plus');
+    const recipeTimeInput = document.getElementById('recipe-time');
+    const addIngredientBtn = document.getElementById('add-ingredient-btn');
+    const selectedIngredientsList = document.getElementById('selected-ingredients-list');
 
     let selectedIngredients = [];
-
-    // Function to open the modal
-    window.openAddRecipeModal = () => {
-        addRecipeModal.style.display = 'flex';
-        // Fetch data only if not already loaded
-        if (categorySelect.options.length <= 1) {
-            fetchData('/api/categories', categorySelect, 'Category');
-            fetchData('/api/ingredients', ingredientSelect, 'Add the ingredient');
-        }
-    };
-
-    // Function to close the modal
-    const closeModal = () => {
-        addRecipeModal.style.display = 'none';
-    };
-
-    closeModalBtn.addEventListener('click', closeModal);
-    addRecipeModal.addEventListener('click', (e) => {
-        if (e.target === addRecipeModal) {
-            closeModal();
-        }
-    });
 
     // 1. Image Preview
     imageUpload.addEventListener('change', () => {
@@ -66,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectElement.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
             data.forEach(item => {
                 const option = document.createElement('option');
-                option.value = item._id || item.id;
+                option.value = item._id || item.id; // Adjust based on your API response
                 option.textContent = item.name;
                 selectElement.appendChild(option);
             });
@@ -74,6 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(`Failed to fetch ${placeholder}:`, error);
         }
     }
+
+    fetchData('/api/categories', categorySelect, 'Category');
+    fetchData('/api/ingredients', ingredientSelect, 'Add the ingredient');
 
     // 3. Time Selector
     let currentTime = 10;
@@ -95,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addIngredientBtn.addEventListener('click', () => {
         const ingredientId = ingredientSelect.value;
         const ingredientName = ingredientSelect.options[ingredientSelect.selectedIndex].text;
-        const quantity = document.getElementById('ingredient-quantity-modal').value.trim();
+        const quantity = document.getElementById('ingredient-quantity').value.trim();
 
         if (!ingredientId || !quantity) {
             alert('Please select an ingredient and enter a quantity.');
@@ -110,14 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedIngredients.push({ id: ingredientId, measure: quantity });
         renderSelectedIngredients();
         
+        // Reset fields
         ingredientSelect.value = '';
-        document.getElementById('ingredient-quantity-modal').value = '';
+        document.getElementById('ingredient-quantity').value = '';
     });
 
     function renderSelectedIngredients() {
         selectedIngredientsList.innerHTML = '';
         selectedIngredients.forEach((ing, index) => {
-            const ingredientName = document.querySelector(`#ingredient-select-modal option[value="${ing.id}"]`).textContent;
+            const ingredientName = document.querySelector(`#ingredient-select option[value="${ing.id}"]`).textContent;
             const tag = document.createElement('div');
             tag.className = 'ingredient-tag';
             tag.innerHTML = `
@@ -136,50 +112,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const addIngredientSelector = async () => {
-        const row = document.createElement('div');
-        row.className = 'ingredient-row';
-
-        const select = document.createElement('select');
-        select.name = 'ingredient-name';
-        await fetchData('/api/ingredients', select, 'Select an ingredient');
-
-        const quantityInput = document.createElement('input');
-        quantityInput.type = 'text';
-        quantityInput.name = 'ingredient-quantity';
-        quantityInput.placeholder = 'Enter quantity';
-
-        row.appendChild(select);
-        row.appendChild(quantityInput);
-        ingredientsList.appendChild(row);
-    };
-
-    addIngredientSelectorBtn.addEventListener('click', addIngredientSelector);
-
     // 5. Form Submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const formData = new FormData();
-        formData.append('title', document.getElementById('recipe-title-modal').value);
-        formData.append('description', document.getElementById('recipe-description-modal').value);
+        formData.append('title', document.getElementById('recipe-title').value);
+        formData.append('description', document.getElementById('recipe-description').value);
         formData.append('category', categorySelect.value);
         formData.append('time', recipeTimeInput.value);
-        formData.append('instructions', document.getElementById('recipe-preparation-modal').value);
+        formData.append('instructions', document.getElementById('recipe-preparation').value);
         formData.append('ingredients', JSON.stringify(selectedIngredients));
-
-        const ingredientNames = [];
-        const ingredientQuantities = [];
-        const ingredientRows = ingredientsList.children;
-        for (let i = 0; i < ingredientRows.length; i++) {
-            const row = ingredientRows[i];
-            const select = row.querySelector('select');
-            const input = row.querySelector('input');
-            ingredientNames.push(select.value);
-            ingredientQuantities.push(input.value);
-        }
-        formData.append('ingredientNames', JSON.stringify(ingredientNames));
-        formData.append('ingredientQuantities', JSON.stringify(ingredientQuantities));
 
         if (imageUpload.files[0]) {
             formData.append('thumb', imageUpload.files[0]);
@@ -201,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             alert('Recipe created successfully!');
-            closeModal();
-            window.location.href = `/recipe_page.html?id=${result._id}`;
+            window.location.href = `/recipe_page.html?id=${result._id}`; // Redirect to the new recipe page
 
         } catch (error) {
             console.error('Error creating recipe:', error);

@@ -148,8 +148,8 @@ export async function unfollowUser(followerId, followingId) {
   return { message: "Unfollowed successfully" };
 }
 
-export async function getUserDetails(currentUserId, targetUserId) {
-  const user = await User.findByPk(targetUserId, {
+export async function getUserDetails(userId) {
+  const user = await User.findByPk(userId, {
     attributes: ["id", "name", "email", "avatarURL"],
   });
 
@@ -157,35 +157,21 @@ export async function getUserDetails(currentUserId, targetUserId) {
     throw HttpError(404, "User not found");
   }
 
-  const recipesCount = await Recipe.count({ where: { ownerId: targetUserId } });
-  const followersCount = await Follow.count({
-    where: { followingId: targetUserId },
-  });
+  // Подсчитываем всю статистику для пользователя
+  const recipesCount = await Recipe.count({ where: { ownerId: userId } });
+  const favoritesCount = await Favorite.count({ where: { userId: userId } });
+  const followersCount = await Follow.count({ where: { followingId: userId } });
+  const followingsCount = await Follow.count({ where: { followerId: userId } });
 
-  if (currentUserId === targetUserId) {
-    const followingsCount = await Follow.count({
-      where: { followerId: currentUserId },
-    });
-    const favoritesCount = await Favorite.count({
-      where: { userId: currentUserId },
-    });
-
-    return {
-      user,
-      details: {
-        recipesCount,
-        favoritesCount,
-        followersCount,
-        followingsCount,
-      },
-    };
-  }
-
+  // Возвращаем один плоский объект со всеми данными
   return {
-    user,
-    details: {
-      recipesCount,
-      followersCount,
-    },
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatarURL: user.avatarURL,
+    recipesCount,
+    favoritesCount,
+    followersCount,
+    followingsCount,
   };
 }

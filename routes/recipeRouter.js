@@ -11,6 +11,7 @@ import {
   getFavoriteRecipesWrapper
 } from '../controllers/recipesController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
+import optionalAuthMiddleware from '../middlewares/optionalAuthMiddleware.js';
 import { upload } from '../middlewares/uploadMiddleware.js';
 
 const router = express.Router();
@@ -19,7 +20,7 @@ router.get('/own', authMiddleware, getOwnRecipesWrapper);
 router.get('/favorites', authMiddleware, getFavoriteRecipesWrapper);
 router.get('/popular', getPopularRecipesWrapper);
 router.get('/:id', getRecipeByIdWrapper);
-router.get('/', searchRecipesWrapper);
+router.get('/', optionalAuthMiddleware, searchRecipesWrapper);
 
 router.post('/', authMiddleware, upload.single('thumb'), createRecipeWrapper);
 router.delete('/:id', authMiddleware, deleteRecipeWrapper);

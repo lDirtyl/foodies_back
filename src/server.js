@@ -83,6 +83,15 @@ app.get('/add-recipe', authMiddleware, (req, res) => {
   res.sendFile('add_recipe_page.html', { root: 'public' });
 });
 
+// Profile page routes
+app.get('/profile', (req, res) => {
+  res.sendFile('profile.html', { root: 'public' });
+});
+
+app.get('/user/:id', (req, res) => {
+  res.sendFile('profile.html', { root: 'public' });
+});
+
 // Логирование всех маршрутов Express 5
 function logExpressRoutes(app) {
   if (!app._router || !app._router.stack) {

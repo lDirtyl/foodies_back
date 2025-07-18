@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let allAreasForCategory = [];
 
     // --- API Calls ---
-    const fetchData = async (url) => {
+    const fetchData = async (url, options = {}) => {
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, options);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const recipeImage = formatImageUrl(recipe.thumb);
             // Truncate description for preview
             const description = recipe.description ? recipe.description.substring(0, 70) + '...' : 'No description available.';
+            const likeButtonState = recipe.isFavorite ? '❤️' : '🤍';
 
             card.innerHTML = `
                 <div class="recipe-card-image-container">
@@ -96,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span>${ownerName}</span>
                         </div>
                         <div class="recipe-actions">
-                            <button class="action-btn like-btn" data-recipe-id="${recipe.id}">🤍</button>
+                            <button class="action-btn like-btn" data-recipe-id="${recipe.id}">${likeButtonState}</button>
                             <button class="action-btn details-btn" data-recipe-id="${recipe.id}">↗</button>
                         </div>
                     </div>
@@ -145,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const loadFilteredRecipes = async (append = false) => {
+        const token = localStorage.getItem('token'); // Get token for auth
         if (isLoading) return;
         isLoading = true;
 
@@ -161,7 +163,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ingredientFilter.value) params.append('ingredient', ingredientFilter.value);
         if (areaFilter.value) params.append('area', areaFilter.value);
 
-        const data = await fetchData(`/api/recipes?${params.toString()}`);
+        const headers = {};
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const data = await fetchData(`/api/recipes?${params.toString()}`, { headers });
         renderRecipes(data ? data.recipes : [], append);
 
         removeLoadMoreButton();
@@ -181,10 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ingredientFilter.value = '';
         areaFilter.value = '';
 
-        const ingredientsData = await fetchData(`/api/ingredients?categoryId=${category.id}&limit=1000`);
+        const ingredientsData = await fetchData(`/api/ingredients?limit=1000`);
         allIngredientsForCategory = ingredientsData ? ingredientsData.ingredients : [];
         
-        const areasData = await fetchData(`/api/areas?categoryId=${category.id}&limit=1000`);
+        const areasData = await fetchData(`/api/areas?limit=1000`);
         allAreasForCategory = areasData ? areasData.areas : [];
 
         populateSelect(ingredientFilter, allIngredientsForCategory, allIngredientsForCategory, 'All Ingredients');

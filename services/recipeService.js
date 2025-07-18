@@ -5,7 +5,7 @@ import RecipeIngredient from "../models/RecipeIngredient.js";
 import User from "../models/User.js";
 import HttpError from "../helpers/HttpError.js";
 
-export const searchRecipes = async ({ keyword, category, ingredient, area, page = 1, limit = 12 }) => {
+export const searchRecipes = async ({ keyword, category, ingredient, area, page = 1, limit = 12, userId }) => {
   const filter = {};
   if (keyword) {
     filter.title = { [Op.iLike]: `%${keyword}%` };
@@ -43,6 +43,18 @@ export const searchRecipes = async ({ keyword, category, ingredient, area, page 
     offset,
     distinct: true, // Necessary when using includes with limits
   });
+
+  // If a user is logged in, check which recipes are favorites
+  if (userId) {
+    const user = await User.findByPk(userId);
+    if (user) {
+      const favoriteRecipes = await user.getFavorites({ attributes: ['id'] });
+      const favoriteRecipeIds = new Set(favoriteRecipes.map(r => r.id));
+      rows.forEach(recipe => {
+        recipe.dataValues.isFavorite = favoriteRecipeIds.has(recipe.id);
+      });
+    }
+  }
 
   return {
     recipes: rows,

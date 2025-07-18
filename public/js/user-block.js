@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Note: The forms might not be on every page, so we check for their existence.
     const registerForm = document.getElementById('register-form');
     const loginForm = document.getElementById('login-form');
 
@@ -62,4 +63,38 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // --- SPA Navigation for Profile Link ---
+    // We use event delegation on the body because the #profile-link is added dynamically.
+    document.body.addEventListener('click', async (event) => {
+        const profileLink = event.target.closest('#profile-link');
+        if (profileLink) {
+            event.preventDefault();
+            const mainContent = document.querySelector('main-content');
+
+            if (mainContent) {
+                try {
+                    const response = await fetch('/profile.html');
+                    if (!response.ok) throw new Error('Failed to load profile page');
+                    mainContent.innerHTML = await response.text();
+
+                    // Clean up old script and add new one to run profile page logic
+                    const oldScript = document.querySelector('script[src="/js/profile.js"]');
+                    if (oldScript) oldScript.remove();
+
+                    const newScript = document.createElement('script');
+                    newScript.src = '/js/profile.js';
+                    newScript.type = 'module';
+                    document.body.appendChild(newScript);
+
+                } catch (error) {
+                    console.error('SPA nav error:', error);
+                    mainContent.innerHTML = '<p>Error loading page.</p>';
+                }
+            } else {
+                // Fallback if main-content isn't on the page, just navigate normally
+                window.location.href = profileLink.href;
+            }
+        }
+    });
 });
