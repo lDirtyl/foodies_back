@@ -1,0 +1,135 @@
+/* Auth Buttons Toggle Style */
+.auth-buttons-toggle {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    overflow: hidden;
+}
+
+.auth-buttons-toggle a {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.auth-buttons-toggle a.active {
+    background-color: #111;
+    color: white;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(2, 2, 2, 0.4);
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    font-family: 'Inter', sans-serif;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.modal h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 28px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid rgba(27, 27, 27, 0.15);
+    border-radius: 15px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.modal-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 15px;
+    background-color: #111;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-btn:hover {
+    background-color: #333;
+}
+
+.modal-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.modal-link a {
+    color: #111;
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.modal-error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-align: center;
+    min-height: 1em;
+}
+
+/* Logout Modal Specifics */
+#logout-modal .modal {
+    text-align: center;
+}
+#logout-modal h2 {
+    text-align: center;
+}
+#logout-modal .modal-btn-confirm {
+    background-color: #111;
+    color: white;
+}
+#logout-modal .modal-btn-cancel {
+    background-color: white;
+    color: #111;
+    border: 1px solid rgba(27, 27, 27, 0.15);
+    margin-top: 10px;
+}

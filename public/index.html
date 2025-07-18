@@ -4,67 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foodies - Find Your Favorite Recipe</title>
-            <link rel="stylesheet" href="/css/main_styles.css">
+    <link rel="stylesheet" href="/css/main_styles.css">
+    <link rel="stylesheet" href="/css/auth.css">
     <link rel="stylesheet" href="/css/spa_styles.css">
+    <link rel="stylesheet" href="/css/auth.css">
     <link rel="stylesheet" href="/user-block.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/add_recipe_modal.css">
     <style>
+        /* Recipe Card Grid */
+        .recipe-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 24px 0;
+        }
+
+        /* Recipe Card Styles */
         .recipe-card-new {
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+
         .recipe-card-new:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
+
         .recipe-card-image-container img {
             width: 100%;
-            height: 200px; /* Fixed height for consistency */
+            height: 200px;
             object-fit: cover;
         }
+
         .recipe-card-content {
             padding: 16px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
+
         .recipe-card-content h5 {
             font-size: 18px;
             font-weight: 600;
             margin: 0 0 8px 0;
             color: #1a1a1a;
         }
+
         .recipe-card-content p {
+            flex-grow: 1;
             font-size: 14px;
             color: #666;
-            flex-grow: 1;
+            line-height: 1.5;
             margin: 0 0 16px 0;
+            flex-grow: 1;
         }
+
         .recipe-card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: auto; /* Pushes footer to the bottom */
         }
+
         .recipe-author {
             display: flex;
             align-items: center;
+            gap: 8px;
         }
+
         .author-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            margin-right: 8px;
             object-fit: cover;
         }
+
         .recipe-author span {
             font-size: 14px;
             font-weight: 500;
+            color: #333;
         }
+
         .recipe-actions .action-btn {
             background: none;
             border: 1px solid #e0e0e0;
@@ -72,15 +97,17 @@
             width: 36px;
             height: 36px;
             cursor: pointer;
-            margin-left: 8px;
             font-size: 18px;
             transition: background-color 0.2s, border-color 0.2s;
         }
+
         .recipe-actions .action-btn:hover {
             background-color: #f5f5f5;
             border-color: #ccc;
         }
     </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
 </head>
 <body>
     <!-- Quest Board Widget -->
@@ -103,14 +130,44 @@
             <iframe id="questIframe" class="iframe-content" src=""></iframe>
         </div>
     </div>
-    <header>
+    <header class="header">
         <div class="container header-content">
             <a href="/index.html" class="logo">Foodies</a>
-            <nav id="main-nav">
-                <!-- Nav links will be dynamically added here -->
-            </nav>
+            
+            <!-- This container will be dynamically filled by header.js -->
+            <div id="header-nav-container"></div>
+
         </div>
     </header>
+
+    <!-- Template for Logged-Out State -->
+    <template id="logged-out-header-template">
+        <div class="auth-buttons-toggle">
+            <a id="open-signin-modal" class="toggle-btn">Sign In</a>
+            <a id="open-signup-modal" class="toggle-btn active">Sign Up</a>
+        </div>
+    </template>
+
+    <!-- Template for Logged-In State -->
+    <template id="logged-in-header-template">
+        <nav class="header-nav">
+            <a href="#" class="nav-link">Дополнительно</a>
+            <a href="/index.html" class="nav-link">HOME</a>
+            <a href="/add_recipe_page.html" class="nav-link add-recipe">ADD RECIPE (link)</a>
+            <button id="open-add-recipe-modal" class="nav-link add-recipe">ADD RECIPE (modal)</button>
+            <a href="#" id="logout-btn" class="nav-link">LOG OUT</a>
+            <div class="user-profile">
+                <div class="user-profile-toggle">
+                    <img src="" alt="User Avatar" id="user-avatar">
+                    <span id="user-name"></span>
+                    <span>&#9662;</span>
+                </div>
+                <div class="user-profile-dropdown">
+                    <a href="/profile.html">Profile</a>
+                </div>
+            </div>
+        </nav>
+    </template>
 
     <main class="container">
         <section class="hero">
@@ -170,6 +227,123 @@
         <script src="/js/main.js"></script>
         <script src="/js/widget.js"></script>
         <script src="/js/admin-viewer.js"></script>
+    <script src="/js/header.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/add_recipe_modal.js"></script>
     <script src="/js/spa.js"></script>
+
+    <!-- Auth Modals -->
+    <div id="signin-modal" class="modal-overlay">
+        <div class="modal">
+            <button class="modal-close-btn">&times;</button>
+            <h2>Sign In</h2>
+            <form id="signin-form">
+                <div class="modal-error" id="signin-error"></div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email*" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password*" required>
+                </div>
+                <button type="submit" class="modal-btn">Sign In</button>
+            </form>
+            <div class="modal-link">Don't have an account? <a id="switch-to-signup">Create an account</a></div>
+        </div>
+    </div>
+
+    <div id="signup-modal" class="modal-overlay">
+        <div class="modal">
+            <button class="modal-close-btn">&times;</button>
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <div class="modal-error" id="signup-error"></div>
+                <div class="form-group">
+                    <input type="text" name="name" placeholder="Name*" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email*" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password*" required>
+                </div>
+                <button type="submit" class="modal-btn">Create</button>
+            </form>
+            <div class="modal-link">I already have an account? <a id="switch-to-signin">Sign In</a></div>
+        </div>
+    </div>
+
+    <!-- Add Recipe Modal -->
+    <div id="add-recipe-modal" class="modal-overlay">
+        <div class="modal add-recipe-container">
+            <button class="modal-close-btn">&times;</button>
+            <div class="add-recipe-header">
+                <h1 class="add-recipe-title">ADD RECIPE</h1>
+                <p class="add-recipe-description">Reveal your culinary art, share your favorite recipe and create gastronomic masterpieces with us.</p>
+            </div>
+            <form id="recipe-form-modal" class="add-recipe-form">
+                <div class="form-left">
+                    <div class="file-upload-container">
+                        <input type="file" id="image-upload-modal" class="file-upload-input" accept="image/*">
+                        <label for="image-upload-modal" class="file-upload-label">
+                            <svg class="upload-icon" width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M44 16H48C50.2091 16 52 17.7909 52 20V48C52 50.2091 50.2091 52 48 52H16C13.7909 52 12 50.2091 12 48V20C12 17.7909 13.7909 16 16 16H20" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M32 40C36.4183 40 40 36.4183 40 32C40 27.5817 36.4183 24 32 24C27.5817 24 24 27.5817 24 32C24 36.4183 27.5817 40 32 40Z" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M20 16L24.8 8H39.2L44 16" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="upload-text">Upload a photo</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-right">
+                    <div class="form-group">
+                        <label for="recipe-name-modal">THE NAME OF THE RECIPE</label>
+                        <input type="text" id="recipe-name-modal" name="title" placeholder="Enter a description of the dish" maxlength="200">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipe-category-modal">CATEGORY</label>
+                            <select id="recipe-category-modal" name="category">
+                                <option value="" disabled selected>Select a category</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipe-time-modal">COOKING TIME</label>
+                             <input type="text" id="recipe-time-modal" name="time" placeholder="e.g., 25min">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>INGREDIENTS</label>
+                        <div id="ingredients-list-modal">
+                            <div class="ingredient-row">
+                                <select name="ingredient-name">
+                                    <option value="" disabled selected>Add the ingredient</option>
+                                </select>
+                                <input type="text" name="ingredient-quantity" placeholder="Enter quantity">
+                            </div>
+                        </div>
+                        <button type="button" id="add-ingredient-modal" class="add-ingredient-btn">ADD INGREDIENT +</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipe-prep-modal">RECIPE PREPARATION</label>
+                        <textarea id="recipe-prep-modal" name="description" placeholder="Enter recipe" maxlength="200"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="publish-btn">PUBLISH</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="logout-modal" class="modal-overlay">
+        <div class="modal" style="text-align: center;">
+            <button class="modal-close-btn">&times;</button>
+            <h2>Are you logging out?</h2>
+            <p>You can always log back in at any time.</p>
+            <button id="confirm-logout-btn" class="modal-btn modal-btn-confirm">Log Out</button>
+            <button id="cancel-logout-btn" class="modal-btn modal-btn-cancel">Cancel</button>
+        </div>
+    </div>
+
 </body>
 </html>

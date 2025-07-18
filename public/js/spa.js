@@ -241,6 +241,47 @@ document.addEventListener('DOMContentLoaded', () => {
         ingredientFilter.addEventListener('change', handleFilterChange);
         areaFilter.addEventListener('change', handleFilterChange);
 
+        // --- Like/Unlike Logic ---
+        recipeListGrid.addEventListener('click', async (event) => {
+            const likeButton = event.target.closest('.like-btn');
+            if (!likeButton) return;
+
+            // Check for auth token
+            const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+            if (!token) {
+                alert('Пожалуйста, войдите в систему, чтобы добавлять рецепты в избранное.');
+                return;
+            }
+
+            const recipeId = likeButton.dataset.recipeId;
+            const isLiked = likeButton.textContent.includes('❤️');
+            const method = isLiked ? 'DELETE' : 'POST';
+            const url = `/api/recipes/${recipeId}/favorite`;
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Send the token for authentication
+                    },
+                });
+
+                if (response.ok) {
+                    likeButton.textContent = isLiked ? '🤍' : '❤️';
+                } else if (response.status === 401) {
+                    alert('Ваша сессия истекла. Пожалуйста, войдите снова.');
+                    // Optionally, redirect to login page
+                } else {
+                    const errorData = await response.json();
+                    console.error('Failed to update favorite status:', errorData.message);
+                    alert(`Ошибка: ${errorData.message}`);
+                }
+            } catch (error) {
+                console.error('Network error when updating favorite:', error);
+            }
+        });
+
         showCategoryView();
     };
 
