@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Details - Foodies</title>
+    <link rel="stylesheet" href="/css/recipe_page_styles.css">
+</head>
+<body>
+    <header>
+        <a href="/index.html" class="home-link">Foodies</a>
+    </header>
+
+    <main id="recipe-container" class="container">
+        <!-- Recipe content will be dynamically inserted here -->
+    </main>
+
+    <template id="recipe-details-template">
+        <h1 id="recipe-title"></h1>
+        <div class="recipe-meta">
+            <span id="recipe-category"></span>
+            <span id="recipe-time"></span>
+        </div>
+        <img id="recipe-thumb" src="" alt="Recipe Image">
+        <p id="recipe-description"></p>
+        
+        <div class="recipe-actions">
+             <button id="add-to-favorites-btn" class="btn">Add to Favorites</button>
+        </div>
+
+        <h3>Ingredients</h3>
+        <ul id="recipe-ingredients"></ul>
+
+        <h3>Instructions</h3>
+        <p id="recipe-instructions"></p>
+    </template>
+
+    <script src="/js/recipe_page.js"></script>
+</body>
+</html>

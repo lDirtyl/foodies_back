@@ -8,60 +8,81 @@
     <link rel="stylesheet" href="/add_recipe_form_styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="wrap">
-            <h1 class="recipePageTitle">Add recipe</h1>
-            <p class="recipeText">Follow the instructions to create your recipe and share it with the community</p>
-            <form id="recipe-form" class="formWrap">
-                <div class="leftBlock">
-                    <div class="loadWrapBox">
-                        <input type="file" id="image-upload" class="hiddenInput" accept="image/*">
-                        <label for="image-upload" class="loadWrap">
-                            <div class="imgWrap">
-                                <svg class="cameraFrame" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M20 16H12C9.79086 16 8 17.7909 8 20V52C8 54.2091 9.79086 56 12 56H52C54.2091 56 56 54.2091 56 52V20C56 17.7909 54.2091 16 52 16H44" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M32 36C36.4183 36 40 32.4183 40 28C40 23.5817 36.4183 20 32 20C27.5817 20 24 23.5817 24 28C24 32.4183 27.5817 36 32 36Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M44 8H20L24 16H40L44 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                            <span class="placeholder">Drop your image here, or browse</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="rightBlock">
-                    <div class="infoWrap">
-                        <div class="field nameRecipeInput">
-                            <input type="text" id="recipe-name" name="recipe-name" placeholder="The name of the recipe" required>
-                        </div>
-                        <div class="field recipeDescrInput">
-                            <textarea id="recipe-descr" name="recipe-descr" placeholder="Enter a description of the recipe" required></textarea>
-                        </div>
-                        <div class="field recipeWrapLabel">
-                             <label for="recipe-category">Category</label>
-                             <select id="recipe-category" name="recipe-category" class="selectedValue" required>
-                                <!-- Options will be populated by JS -->
-                             </select>
-                        </div>
-                        <div class="field recipeWrapLabel">
-                            <label for="recipe-time">Cooking time</label>
-                            <input type="text" id="recipe-time" name="recipe-time" placeholder="e.g., 30 minutes" required>
-                        </div>
-                    </div>
-                    <div class="ingredients-section">
-                        <h3>Ingredients</h3>
-                        <div id="ingredients-list">
-                            <!-- Ingredient rows will be added here -->
-                        </div>
-                        <button type="button" id="add-ingredient">Add Ingredient</button>
-                    </div>
-                    <div class="instructions-section">
-                        <h3>Recipe Preparation</h3>
-                        <textarea id="instructions" name="instructions" placeholder="Enter the steps for preparation" required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Publish recipe</button>
-                </div>
-            </form>
+    <div class="add-recipe-container">
+        <div class="add-recipe-header">
+            <h1 class="add-recipe-title">ADD RECIPE</h1>
+            <p class="add-recipe-description">Reveal your culinary art, share your favorite recipe and create gastronomic masterpieces with us.</p>
         </div>
+        <form id="recipe-form" class="add-recipe-form">
+            <div class="form-left">
+                <div class="file-upload-container">
+                    <input type="file" id="image-upload" class="file-upload-input" accept="image/*">
+                    <label for="image-upload" class="file-upload-label">
+                        <svg class="upload-icon" width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M44 16H48C50.2091 16 52 17.7909 52 20V48C52 50.2091 50.2091 52 48 52H16C13.7909 52 12 50.2091 12 48V20C12 17.7909 13.7909 16 16 16H20" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M32 40C36.4183 40 40 36.4183 40 32C40 27.5817 36.4183 24 32 24C27.5817 24 24 27.5817 24 32C24 36.4183 27.5817 40 32 40Z" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M20 16L24.8 8H39.2L44 16" stroke="#050505" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="upload-text">Upload a photo</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-right">
+                <div class="form-group">
+                    <label for="recipe-name">THE NAME OF THE RECIPE</label>
+                    <div class="input-with-counter">
+                        <input type="text" id="recipe-name" name="recipe-name" placeholder="Enter a description of the dish" maxlength="200">
+                        <span class="char-counter">0/200</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recipe-category">CATEGORY</label>
+                        <select id="recipe-category" name="recipe-category">
+                            <option value="" disabled selected>Select a category</option>
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipe-time">COOKING TIME</label>
+                        <div class="time-selector">
+                            <button type="button" class="time-btn minus-btn">-</button>
+                            <span class="time-value">10 min</span>
+                            <button type="button" class="time-btn plus-btn">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>INGREDIENTS</label>
+                    <div id="ingredients-list">
+                        <div class="ingredient-row">
+                            <select name="ingredient-name">
+                                <option value="" disabled selected>Add the ingredient</option>
+                                <!-- Options will be populated by JS -->
+                            </select>
+                            <input type="text" name="ingredient-quantity" placeholder="Enter quantity">
+                        </div>
+                    </div>
+                    <button type="button" id="add-ingredient" class="add-ingredient-btn">ADD INGREDIENT +</button>
+                </div>
+                <div class="form-group">
+                    <label for="recipe-prep">RECIPE PREPARATION</label>
+                    <div class="input-with-counter">
+                        <textarea id="recipe-prep" name="recipe-prep" placeholder="Enter recipe" maxlength="200"></textarea>
+                        <span class="char-counter">0/200</span>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="delete-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button type="submit" class="publish-btn">PUBLISH</button>
+                </div>
+            </div>
+        </form>
     </div>
     <script src="/add_recipe_form.js"></script>
 </body>

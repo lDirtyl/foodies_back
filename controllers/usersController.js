@@ -61,15 +61,13 @@ const getCurrentUser = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
-  // Отримуємо URL з тіла запиту.
-  const { avatarURL } = req.body;
-
-  // Перевіряємо, чи було передано avatarURL
-  if (typeof avatarURL === "undefined") {
-    throw HttpError(400, "avatarURL is required in the request body");
+  // The new avatar URL is available from the uploaded file
+  if (!req.file) {
+    throw HttpError(400, 'Avatar file is required.');
   }
+  const avatarURL = req.file.path;
 
-  // Викликаємо сервіс для оновлення аватара
+  // Call the service to update the avatar
   const result = await userService.updateAvatar(req.user.id, avatarURL);
 
   res.json(result);

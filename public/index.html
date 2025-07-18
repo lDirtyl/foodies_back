@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodies - Find Your Favorite Recipe</title>
+        <link rel="stylesheet" href="/css/main_styles.css">
+    <link rel="stylesheet" href="/user-block.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Quest Board Widget -->
+    <div class="quest-widget-container">
+        <button id="widgetMainButton" class="widget-main-button">
+            <img src="q3.svg" alt="Quests Icon" class="widget-icon-q">
+        </button>
+        <div id="widgetSubButtons" class="widget-sub-buttons-container">
+            <button id="openQuestsBoardBtn" class="widget-sub-button">
+                <i class="fas fa-clipboard-list"></i> Quests Board
+            </button>
+            <button id="openAddQuestBtn" class="widget-sub-button">
+                <i class="fas fa-plus-circle"></i> Add Quest
+            </button>
+        </div>
+    </div>
+    <div id="questIframeOverlay" class="iframe-overlay">
+        <div class="iframe-container">
+            <button id="iframeCloseButton" class="iframe-close-button">&times;</button>
+            <iframe id="questIframe" class="iframe-content" src=""></iframe>
+        </div>
+    </div>
+    <header>
+        <div class="container header-content">
+            <a href="/index.html" class="logo">Foodies</a>
+            <nav id="main-nav">
+                <!-- Nav links will be dynamically added here -->
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Discover Delicious Recipes</h1>
+            <p>Search from thousands of recipes from all over the world.</p>
+        </section>
+
+        <section class="search-section">
+            <form id="search-form">
+                <input type="text" id="search-keyword" placeholder="Search for a recipe...">
+                <select id="category-filter"><option value="">All Categories</option></select>
+                <button type="submit">Search</button>
+            </form>
+        </section>
+
+        <section id="recipes-display">
+            <h2>Popular Recipes</h2>
+            <div id="recipes-grid" class="recipes-grid"></div>
+            <div id="pagination-controls"></div>
+        </section>
+    </main>
+
+        <script src="/js/main.js"></script>
+    <script src="/js/widget.js"></script>
+</body>
+</html>

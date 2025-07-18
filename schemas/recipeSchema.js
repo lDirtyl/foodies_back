@@ -28,6 +28,7 @@ export const recipeIdSchema = Joi.object({
 });
 
 export const searchSchema = Joi.object({
+  keyword: Joi.string().allow('', null),
   category: Joi.string().guid({ version: 'uuidv4' }).allow(null),
   ingredient: Joi.string().allow(null),
   area: Joi.string().allow(null),

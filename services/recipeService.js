@@ -6,6 +6,7 @@ import User from "../models/User.js";
 import HttpError from "../helpers/HttpError.js";
 
 export async function searchRecipes({
+  keyword,
   category,
   ingredient,
   area,
@@ -13,6 +14,9 @@ export async function searchRecipes({
   limit = 10,
 }) {
   const filter = {};
+  if (keyword) {
+    filter.title = { [Op.iLike]: `%${keyword}%` };
+  }
   if (category) filter.categoryId = category;
   if (area) filter.areaId = area;
 
@@ -140,10 +144,11 @@ export async function getPopularRecipes({ page = 1, limit = 10 }) {
 export async function createRecipe(data, ownerId) {
   // Extract ingredients from the data
   const { ingredients, ...recipeData } = data;
+  let recipe;
 
   try {
     // Create the recipe
-    const recipe = await Recipe.create({ ...recipeData, ownerId });
+    recipe = await Recipe.create({ ...recipeData, ownerId });
 
     // If ingredients were provided, associate them with the recipe
     if (ingredients && ingredients.length > 0) {

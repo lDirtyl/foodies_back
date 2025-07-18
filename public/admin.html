@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Database Viewer</title>
+    <link rel="stylesheet" href="/css/admin_styles.css">
+</head>
+<body>
+    <div id="auth-container">
+        <h1>Admin Access</h1>
+        <p>Enter the password to view database tables.</p>
+        <input type="password" id="password-input" placeholder="Password">
+        <button id="submit-password">Submit</button>
+        <p id="auth-error" class="error-message"></p>
+    </div>
+
+    <div id="admin-panel" style="display: none;">
+        <header>
+            <h1>Database Viewer</h1>
+        </header>
+        <main>
+            <aside id="tables-list-container">
+                <h2>Tables</h2>
+                <ul id="tables-list"></ul>
+            </aside>
+            <section id="table-content-container">
+                <h2 id="current-table-name">Select a table to view its content</h2>
+                <div id="table-content"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/js/admin.js"></script>
+</body>
+</html>
