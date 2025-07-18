@@ -11,6 +11,7 @@ import categoriesRouter from "../routes/categoriesRouter.js";
 import areasRouter from "../routes/areasRouter.js";
 import ingredientsRouter from "../routes/ingredientsRouter.js";
 import testimonialsRouter from "../routes/testimonialsRouter.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 dotenv.config();
 
@@ -73,6 +74,11 @@ app.get("/", async (req, res) => {
 
 // Тестовый эндпоинт для диагностики
 app.get('/test-endpoint', (req, res) => res.send('ok'));
+
+// Сторінка додавання рецепта
+app.get('/add-recipe', authMiddleware, (req, res) => {
+  res.sendFile('add_recipe_page.html', { root: 'public' });
+});
 
 // Логирование всех маршрутов Express 5
 function logExpressRoutes(app) {

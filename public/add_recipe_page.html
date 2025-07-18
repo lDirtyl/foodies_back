@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить рецепт</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/add_recipe_form_styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="wrap">
+            <h1 class="recipePageTitle">Add recipe</h1>
+            <p class="recipeText">Follow the instructions to create your recipe and share it with the community</p>
+            <form id="recipe-form" class="formWrap">
+                <div class="leftBlock">
+                    <div class="loadWrapBox">
+                        <input type="file" id="image-upload" class="hiddenInput" accept="image/*">
+                        <label for="image-upload" class="loadWrap">
+                            <div class="imgWrap">
+                                <svg class="cameraFrame" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 16H12C9.79086 16 8 17.7909 8 20V52C8 54.2091 9.79086 56 12 56H52C54.2091 56 56 54.2091 56 52V20C56 17.7909 54.2091 16 52 16H44" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M32 36C36.4183 36 40 32.4183 40 28C40 23.5817 36.4183 20 32 20C27.5817 20 24 23.5817 24 28C24 32.4183 27.5817 36 32 36Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M44 8H20L24 16H40L44 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <span class="placeholder">Drop your image here, or browse</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="rightBlock">
+                    <div class="infoWrap">
+                        <div class="field nameRecipeInput">
+                            <input type="text" id="recipe-name" name="recipe-name" placeholder="The name of the recipe" required>
+                        </div>
+                        <div class="field recipeDescrInput">
+                            <textarea id="recipe-descr" name="recipe-descr" placeholder="Enter a description of the recipe" required></textarea>
+                        </div>
+                        <div class="field recipeWrapLabel">
+                             <label for="recipe-category">Category</label>
+                             <select id="recipe-category" name="recipe-category" class="selectedValue" required>
+                                <!-- Options will be populated by JS -->
+                             </select>
+                        </div>
+                        <div class="field recipeWrapLabel">
+                            <label for="recipe-time">Cooking time</label>
+                            <input type="text" id="recipe-time" name="recipe-time" placeholder="e.g., 30 minutes" required>
+                        </div>
+                    </div>
+                    <div class="ingredients-section">
+                        <h3>Ingredients</h3>
+                        <div id="ingredients-list">
+                            <!-- Ingredient rows will be added here -->
+                        </div>
+                        <button type="button" id="add-ingredient">Add Ingredient</button>
+                    </div>
+                    <div class="instructions-section">
+                        <h3>Recipe Preparation</h3>
+                        <textarea id="instructions" name="instructions" placeholder="Enter the steps for preparation" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Publish recipe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="/add_recipe_form.js"></script>
+</body>
+</html>
