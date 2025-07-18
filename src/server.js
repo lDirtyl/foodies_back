@@ -26,7 +26,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://foodies-front-rouge.vercel.app",
   "https://foodies-back-x15g.onrender.com",
-  "https://foodiesfront.vercel.app/"
+  "https://foodiesfront.vercel.app"
 ];
 
 app.use(
