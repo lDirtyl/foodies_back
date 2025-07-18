@@ -1,0 +1,137 @@
+/* Main container for the SPA block */
+#spa-container {
+    width: 100%;
+    margin-top: 30px;
+}
+
+/* Category Grid Styles */
+#category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.category-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    height: 200px; /* Adjust height as needed */
+}
+
+.category-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover img {
+    transform: scale(1.05);
+}
+
+.category-card .category-name {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+/* Recipe View Styles */
+#recipe-view-container {
+    display: none; /* Hidden by default */
+}
+
+.recipe-view-header {
+    margin-bottom: 20px;
+}
+
+#back-to-categories-btn {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.recipe-filters {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.recipe-filters select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    font-size: 1rem;
+    flex-grow: 1;
+    min-width: 150px;
+    /* The following properties are for the dropdown list itself, which is harder to style directly.
+       Instead, we can wrap the select in a div and style that if needed.
+       For now, the default browser behavior with many options will include a scrollbar. */
+}
+
+.filter-wrapper {
+    max-height: 200px; /* Example height */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.filter-wrapper select {
+    width: 100%;
+    border: none; /* Border is now on the wrapper */
+}
+
+#recipe-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.recipe-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.recipe-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.recipe-card-content {
+    padding: 15px;
+}
+
+.recipe-card-content h3 {
+    margin-top: 0;
+    font-size: 1.1em;
+}
+
+.load-more-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #9EBC9E;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.load-more-btn:hover {
+    background-color: #8AA08A;
+}

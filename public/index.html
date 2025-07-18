@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foodies - Find Your Favorite Recipe</title>
-        <link rel="stylesheet" href="/css/main_styles.css">
+            <link rel="stylesheet" href="/css/main_styles.css">
+    <link rel="stylesheet" href="/css/spa_styles.css">
     <link rel="stylesheet" href="/user-block.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
@@ -47,19 +48,55 @@
         <section class="search-section">
             <form id="search-form">
                 <input type="text" id="search-keyword" placeholder="Search for a recipe...">
-                <select id="category-filter"><option value="">All Categories</option></select>
+                <div class="filter-wrapper">
+                    <select id="category-filter"><option value="">All Categories</option></select>
+                </div>
                 <button type="submit">Search</button>
             </form>
         </section>
 
-        <section id="recipes-display">
-            <h2>Popular Recipes</h2>
-            <div id="recipes-grid" class="recipes-grid"></div>
-            <div id="pagination-controls"></div>
+                <section id="recipes-display">
+            <div id="spa-container">
+                <!-- Category Grid View -->
+                <div id="category-grid-container">
+                    <h2>Categories</h2>
+                    <div id="category-grid" class="category-grid-container"></div>
+                </div>
+
+                <!-- Recipe List View (initially hidden) -->
+                <div id="recipe-view-container" style="display: none;">
+                    <button id="back-to-categories-btn">&larr; Back to Categories</button>
+                    <div class="recipe-view-header">
+                        <h2 id="recipe-view-title">Recipes</h2>
+                    </div>
+                    <div class="recipe-filters">
+                        <div class="filter-wrapper">
+                            <select id="spa-ingredient-filter"><option value="">All Ingredients</option></select>
+                        </div>
+                        <div class="filter-wrapper">
+                            <select id="spa-area-filter"><option value="">All Areas</option></select>
+                        </div>
+                    </div>
+                    <div id="recipe-list-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin-viewer-section" style="margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+            <button id="show-db-btn">Show Database Tables</button>
+            <div id="admin-content-wrapper" style="display: none; margin-top: 20px;">
+                <p>Admin password: <code id="admin-password-display">supersecretpassword</code></p>
+                <input type="password" id="admin-password-input" placeholder="Enter password">
+                <button id="submit-admin-password">Authenticate</button>
+                <p id="admin-auth-error" class="error-message"></p>
+                <div id="db-viewer-content" style="margin-top: 20px;"></div>
+            </div>
         </section>
     </main>
 
         <script src="/js/main.js"></script>
-    <script src="/js/widget.js"></script>
+        <script src="/js/widget.js"></script>
+        <script src="/js/admin-viewer.js"></script>
+    <script src="/js/spa.js"></script>
 </body>
 </html>

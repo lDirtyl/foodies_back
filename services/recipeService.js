@@ -5,50 +5,44 @@ import RecipeIngredient from "../models/RecipeIngredient.js";
 import User from "../models/User.js";
 import HttpError from "../helpers/HttpError.js";
 
-export async function searchRecipes({
-  keyword,
-  category,
-  ingredient,
-  area,
-  page = 1,
-  limit = 10,
-}) {
+export const searchRecipes = async ({ keyword, category, ingredient, area, page = 1, limit = 12 }) => {
   const filter = {};
   if (keyword) {
     filter.title = { [Op.iLike]: `%${keyword}%` };
   }
-  if (category) filter.categoryId = category;
-  if (area) filter.areaId = area;
+  if (category) {
+    filter.categoryId = category;
+  }
+  if (area) {
+    filter.areaId = area;
+  }
 
   const offset = (page - 1) * limit;
 
-  // Set up the query options
-  const queryOptions = {
-    where: filter,
-    limit,
-    offset,
-  };
-
-  // If ingredient filter is specified, include the ingredient association
+  const includeOptions = [];
   if (ingredient) {
-    queryOptions.include = [
-      {
-        model: Ingredient,
-        as: "ingredients",
-        through: {
-          model: RecipeIngredient,
-        },
-        where: { id: ingredient },
-      },
-    ];
+    includeOptions.push({
+      model: Ingredient,
+      as: 'ingredients',
+      where: { id: ingredient },
+      through: { attributes: [] }, // Don't need data from the junction table here
+      required: true, // This makes it an INNER JOIN
+    });
   }
 
-  const { rows, count } = await Recipe.findAndCountAll(queryOptions);
+  const { rows, count } = await Recipe.findAndCountAll({
+    where: filter,
+    include: includeOptions,
+    limit,
+    offset,
+    distinct: true, // Necessary when using includes with limits
+  });
+
   return {
     recipes: rows,
-    pagination: { page, limit, total: count },
+    pagination: { page: parseInt(page), limit: parseInt(limit), total: count },
   };
-}
+};
 
 export async function getRecipeById(id) {
   const recipe = await Recipe.findByPk(id, {

@@ -1,10 +1,7 @@
-import { sequelize } from '../db.js';
-import { QueryTypes } from 'sequelize';
+import sequelize from "../db/sequelize.js";
 
 const getTableNames = async () => {
-  const tableNames = await sequelize.getQueryInterface().showAllTables();
-  // Filter out SequelizeMeta if it exists
-  return tableNames.filter(name => name.toLowerCase() !== 'sequelizemeta');
+  return Object.keys(sequelize.models);
 };
 
 const getTableContent = async (tableName) => {
@@ -13,13 +10,11 @@ const getTableContent = async (tableName) => {
     throw new Error('Table not found or access denied.');
   }
 
-  // Sanitize table name by quoting to be safe, though it's from a trusted list
-  const quotedTableName = sequelize.getQueryInterface().quoteTable(tableName);
-
-  const content = await sequelize.query(`SELECT * FROM ${quotedTableName} LIMIT 100`, {
-    type: QueryTypes.SELECT,
-  });
-  return content;
+  const model = sequelize.models[tableName];
+  if (!model) {
+    throw new Error(`Model ${tableName} not found`);
+  }
+  return await model.findAll();
 };
 
 export const adminService = {

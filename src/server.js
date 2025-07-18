@@ -3,15 +3,16 @@ import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import { swaggerDocs } from "./middlewares/swaggerDocs.js";
-import sequelize from "../db/sequelize.js";
+
+import sequelize, { connectDB } from '../db/sequelize.js';
+import '../models/index.js'; 
 import recipeRouter from "../routes/recipeRouter.js";
 import userRouter from "../routes/userRouter.js";
 import categoriesRouter from "../routes/categoriesRouter.js";
 import areasRouter from "../routes/areasRouter.js";
 import ingredientsRouter from "../routes/ingredientsRouter.js";
-import testimonialsRouter from './routes/testimonialsRouter.js';
-import adminRouter from './routes/adminRouter.js';
+import testimonialsRouter from '../routes/testimonialsRouter.js';
+import adminRouter from '../routes/adminRouter.js';
 import authMiddleware from "../middlewares/authMiddleware.js";
 
 dotenv.config();
@@ -49,7 +50,7 @@ app.use(express.json());
 // Роздача статичних файлів з папки 'public'
 app.use(express.static("public"));
 app.use("/uploads", express.static(UPLOAD_DIR));
-app.use("/api-docs", ...swaggerDocs);
+// app.use("/api-docs", ...swaggerDocs);
 
 import dbStatusRoute from "./dbStatusRoute.js";
 app.use("/db-status", dbStatusRoute);
@@ -127,17 +128,10 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message });
 });
 
-try {
-  await sequelize.authenticate();
-  await sequelize.sync();
-  console.log("✅ DB connected");
-
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    logExpressRoutes(app);
-  });
-} catch (error) {
-  console.error("❌ Unable to connect to the DB:", error);
-}
+app.listen(PORT, async () => {
+  await connectDB();
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  
+});
 
 export default app;
