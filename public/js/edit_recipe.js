@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const recipeTitle = document.getElementById('recipe-title');
     const recipeDescription = document.getElementById('recipe-description');
     const recipeCategory = document.getElementById('recipe-category');
+    const recipeArea = document.getElementById('recipe-area');
     const recipeTime = document.getElementById('recipe-time');
     const ingredientsContainer = document.getElementById('ingredients-container');
     const ingredientSelect = document.getElementById('ingredient-select');
@@ -40,6 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Load categories and set the correct one
             await fetchCategories(recipe.categoryId);
 
+            // Load areas and set the correct one
+            await fetchAreas(recipe.areaId);
+
             // Load ingredients for the dropdown
             await fetchAllIngredients();
 
@@ -68,6 +72,24 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (error) {
             console.error('Error fetching categories:', error);
+        }
+    };
+
+    const fetchAreas = async (selectedAreaId) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/areas`);
+            const { areas } = await response.json();
+            areas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area.id;
+                option.textContent = area.name;
+                if (area.id === selectedAreaId) {
+                    option.selected = true;
+                }
+                recipeArea.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error fetching areas:', error);
         }
     };
 
@@ -135,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('title', recipeTitle.value);
         formData.append('description', recipeDescription.value);
         formData.append('categoryId', recipeCategory.value);
+        formData.append('areaId', recipeArea.value);
         formData.append('time', recipeTime.value);
         formData.append('instructions', recipePreparation.value);
         formData.append('ingredients', JSON.stringify(selectedIngredients.map(ing => ({ id: ing.id, measure: ing.measure }))));

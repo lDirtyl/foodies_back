@@ -7,6 +7,7 @@ export const updateRecipeSchema = Joi.object({
   thumb: Joi.any(), // For file uploads
   time: Joi.string().allow('', null),
   categoryId: Joi.string().guid({ version: 'uuidv4' }),
+  areaId: Joi.string().guid({ version: 'uuidv4' }),
   ingredients: Joi.any() // Can be string or array of objects
 }).min(1);
 
