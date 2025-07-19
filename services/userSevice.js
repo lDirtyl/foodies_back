@@ -249,7 +249,7 @@ export async function unfollowUser(followerId, followingId) {
   return { message: "Unfollowed successfully" };
 }
 
-export async function getUserDetails(userId) {
+export async function getUserDetails(userId, currentUserId) {
   const user = await User.findByPk(userId, {
     attributes: ["id", "name", "email", "avatarURL"],
   });
@@ -263,6 +263,10 @@ export async function getUserDetails(userId) {
   const favoritesCount = await Favorite.count({ where: { userId: userId } });
   const followersCount = await Follow.count({ where: { followingId: userId } });
   const followingsCount = await Follow.count({ where: { followerId: userId } });
+  const following =
+    (await Follow.findOne({
+      where: { followerId: currentUserId, followingId: userId },
+    })) !== null;
 
   // Возвращаем один плоский объект со всеми данными
   return {
@@ -274,5 +278,6 @@ export async function getUserDetails(userId) {
     favoritesCount,
     followersCount,
     followingsCount,
+    following,
   };
 }

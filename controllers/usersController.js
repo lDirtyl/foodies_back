@@ -124,7 +124,7 @@ const getUserDetails = async (req, res) => {
   const targetUserId = req.params.userId;
 
   // Используем новый сервис для получения полной информации
-  const userDetails = await userService.getUserDetails(targetUserId);
+  const userDetails = await userService.getUserDetails(targetUserId, req.user.id);
   res.status(200).json(userDetails);
 };
 
