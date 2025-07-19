@@ -14,7 +14,12 @@ const getTableContent = async (tableName) => {
   if (!model) {
     throw new Error(`Model ${tableName} not found`);
   }
-  return await model.findAll();
+  const options = {};
+  // Check if the model has a 'createdAt' attribute before applying the order
+  if (model.rawAttributes.createdAt) {
+    options.order = [['createdAt', 'DESC']];
+  }
+  return await model.findAll(options);
 };
 
 export const adminService = {
