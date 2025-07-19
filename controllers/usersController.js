@@ -2,6 +2,7 @@ import * as userService from "../services/userSevice.js";
 import controllerWrapper from "../helpers/controllerWrapper.js";
 import HttpError from "../helpers/HttpError.js";
 import { registerUserSchema, loginUserSchema } from "../schemas/userSchema.js";
+import { paginationSchema } from "../schemas/paginationSchema.js";
 
 const register = async (req, res, next) => {
   const { error, value } = registerUserSchema.validate(req.body);
@@ -74,15 +75,23 @@ const updateAvatar = async (req, res) => {
 };
 
 const getFollowers = async (req, res) => {
+  const { error, value } = paginationSchema.validate(req.query);
+  if (error) throw HttpError(400, error.message);
+  
+  const { page, limit } = value;
   const userId = req.user.id;
-  const followers = await userService.getFollowers(userId);
-  res.status(200).json({ followers });
+  const followers = await userService.getFollowers(userId, { page, limit });
+  res.status(200).json(followers);
 };
 
 const getFollowings = async (req, res) => {
+  const { error, value } = paginationSchema.validate(req.query);
+  if (error) throw HttpError(400, error.message);
+  
+  const { page, limit } = value;
   const userId = req.user.id;
-  const followings = await userService.getFollowings(userId);
-  res.status(200).json({ followings });
+  const followings = await userService.getFollowings(userId, { page, limit });
+  res.status(200).json(followings);
 };
 
 const followUser = async (req, res) => {

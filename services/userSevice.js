@@ -6,6 +6,7 @@ import gravatar from "gravatar";
 import Follow from "../models/follow.js";
 import Recipe from "../models/Recipe.js";
 import Favorite from "../models/favorite.js";
+import { Op } from "sequelize";
 
 export async function registerUser({ name, email, password }) {
   const existingUser = await User.findOne({ where: { email } });
@@ -65,7 +66,7 @@ export async function loginUser({ email, password }) {
 
 export async function getCurrentUser(userId) {
   const user = await User.findByPk(userId, {
-    attributes: ['id', 'name', 'email', 'avatarURL']
+    attributes: ["id", "name", "email", "avatarURL"],
   });
   if (!user) {
     throw HttpError(401, "Not authorized");
@@ -89,40 +90,130 @@ export const updateAvatar = async (userId, avatarURL) => {
   return { avatarURL };
 };
 
-export async function getFollowers(userId) {
-  const user = await User.findByPk(userId, {
-    include: [
-      {
-        model: User,
-        as: "followers",
-        attributes: ["id", "name", "email", "avatarURL"],
-      },
-    ],
+export async function getFollowers(userId, { page = 1, limit = 10 }) {
+  const offset = (page - 1) * limit;
+
+  const { rows: followRows, count } = await Follow.findAndCountAll({
+    where: { followingId: userId },
+    limit,
+    offset,
   });
 
-  if (!user || !user.followers || user.followers.length === 0) {
-    return [];
+  if (followRows.length === 0) {
+    return {
+      followers: [],
+      pagination: { page, limit, total: count },
+    };
   }
 
-  return user.followers;
+  const followerIds = followRows.map((row) => row.followerId);
+
+  const followers = await User.findAll({
+    where: { id: { [Op.in]: followerIds } },
+    attributes: ["id", "name"],
+    include: [
+      {
+        model: Recipe,
+        as: "recipes",
+        attributes: ["thumb"],
+        required: false,
+        limit: 4,
+      },
+    ],
+    group: ["User.id"],
+  });
+
+  // Get the current user's followings to check if they follow each follower
+  const userFollowings = await Follow.findAll({
+    where: { followerId: userId },
+    attributes: ["followingId"],
+  });
+  const userFollowingIds = userFollowings.map((follow) => follow.followingId);
+
+  // Format the response with recipe counts and following status
+  const formattedFollowers = await Promise.all(
+    followers.map(async (follower) => {
+      const recipesCount = await Recipe.count({
+        where: { ownerId: follower.id },
+      });
+
+      return {
+        id: follower.id,
+        name: follower.name,
+        avatarURL: follower.avatarURL,
+        recipes: follower.recipes,
+        recipesCount,
+        following: userFollowingIds.includes(follower.id),
+      };
+    }),
+  );
+
+  return {
+    followers: formattedFollowers,
+    pagination: { page, limit, total: count },
+  };
 }
 
-export async function getFollowings(userId) {
-  const user = await User.findByPk(userId, {
-    include: [
-      {
-        model: User,
-        as: "followings",
-        attributes: ["id", "name", "email", "avatarURL"],
-      },
-    ],
+export async function getFollowings(userId, { page = 1, limit = 10 }) {
+  const offset = (page - 1) * limit;
+
+  const { rows: followRows, count } = await Follow.findAndCountAll({
+    where: { followerId: userId },
+    limit,
+    offset,
   });
 
-  if (!user || !user.followings || user.followings.length === 0) {
-    return [];
+  if (followRows.length === 0) {
+    return {
+      followings: [],
+      pagination: { page, limit, total: count },
+    };
   }
 
-  return user.followings;
+  const followingIds = followRows.map((row) => row.followingId);
+
+  const followings = await User.findAll({
+    where: { id: { [Op.in]: followingIds } },
+    attributes: ["id", "name"],
+    include: [
+      {
+        model: Recipe,
+        as: "recipes",
+        attributes: ["thumb"],
+        required: false,
+        limit: 4,
+      },
+    ],
+    group: ["User.id"],
+  });
+
+  const userFollowers = await Follow.findAll({
+    where: { followingId: userId },
+    attributes: ["followerId"],
+  });
+  const userFollowerIds = userFollowers.map((follow) => follow.followerId);
+
+  const formattedFollowings = await Promise.all(
+    followings.map(async (following) => {
+      const recipesCount = await Recipe.count({
+        where: { ownerId: following.id },
+      });
+
+      return {
+        id: following.id,
+        name: following.name,
+        avatarURL: following.avatarURL,
+        recipes: following.recipes,
+        recipesCount,
+        following: userFollowerIds.includes(following.id),
+      };
+    }),
+  );
+
+  return {
+    followings: formattedFollowings,
+    pagination: { page, limit, total: count },
+  };
 }
 
 export async function followUser(followerId, followingId) {
