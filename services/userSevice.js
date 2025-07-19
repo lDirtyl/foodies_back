@@ -115,7 +115,7 @@ export async function getFollowers(userId, { page = 1, limit = 10 }) {
       {
         model: Recipe,
         as: "recipes",
-        attributes: ["thumb"],
+        attributes: ["thumb", "title"],
         required: false,
         limit: 4,
       },
@@ -179,7 +179,7 @@ export async function getFollowings(userId, { page = 1, limit = 10 }) {
       {
         model: Recipe,
         as: "recipes",
-        attributes: ["thumb"],
+        attributes: ["thumb", "title"],
         required: false,
         limit: 4,
       },
