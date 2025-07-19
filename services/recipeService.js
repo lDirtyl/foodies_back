@@ -5,7 +5,15 @@ import RecipeIngredient from "../models/RecipeIngredient.js";
 import User from "../models/User.js";
 import HttpError from "../helpers/HttpError.js";
 
-export const searchRecipes = async ({ keyword, category, ingredient, area, page = 1, limit = 12, userId }) => {
+export const searchRecipes = async ({
+  keyword,
+  category,
+  ingredient,
+  area,
+  page = 1,
+  limit = 12,
+  userId,
+}) => {
   const filter = {};
   if (keyword) {
     filter.title = { [Op.iLike]: `%${keyword}%` };
@@ -23,7 +31,7 @@ export const searchRecipes = async ({ keyword, category, ingredient, area, page 
   if (ingredient) {
     includeOptions.push({
       model: Ingredient,
-      as: 'ingredients',
+      as: "ingredients",
       where: { id: ingredient },
       through: { attributes: [] }, // Don't need data from the junction table here
       required: true, // This makes it an INNER JOIN
@@ -32,8 +40,8 @@ export const searchRecipes = async ({ keyword, category, ingredient, area, page 
 
   includeOptions.push({
     model: User,
-    as: 'owner',
-    attributes: ['name', 'avatarURL'],
+    as: "owner",
+    attributes: ["name", "avatarURL"],
   });
 
   const { rows, count } = await Recipe.findAndCountAll({
@@ -48,9 +56,9 @@ export const searchRecipes = async ({ keyword, category, ingredient, area, page 
   if (userId) {
     const user = await User.findByPk(userId);
     if (user) {
-      const favoriteRecipes = await user.getFavorites({ attributes: ['id'] });
-      const favoriteRecipeIds = new Set(favoriteRecipes.map(r => r.id));
-      rows.forEach(recipe => {
+      const favoriteRecipes = await user.getFavorites({ attributes: ["id"] });
+      const favoriteRecipeIds = new Set(favoriteRecipes.map((r) => r.id));
+      rows.forEach((recipe) => {
         recipe.dataValues.isFavorite = favoriteRecipeIds.has(recipe.id);
       });
     }
@@ -75,9 +83,9 @@ export async function getRecipeById(id) {
       },
       {
         model: User,
-        as: 'owner',
-        attributes: ['id', 'name']
-      }
+        as: "owner",
+        attributes: ["id", "name"],
+      },
     ],
   });
 
@@ -202,11 +210,13 @@ export async function updateRecipe(id, ownerId, data) {
 
   if (ingredients) {
     await RecipeIngredient.destroy({ where: { recipeId: id } });
-    const recipeIngredients = ingredients.map(({ id: ingredientId, measure }) => ({
-      recipeId: recipe.id,
-      ingredientId,
-      measure,
-    }));
+    const recipeIngredients = ingredients.map(
+      ({ id: ingredientId, measure }) => ({
+        recipeId: recipe.id,
+        ingredientId,
+        measure,
+      }),
+    );
     await RecipeIngredient.bulkCreate(recipeIngredients);
   }
 
@@ -227,7 +237,12 @@ export async function deleteRecipe(id, ownerId) {
 
 export async function getRecipesByOwner(ownerId, { page = 1, limit = 10 }) {
   const offset = (page - 1) * limit;
-  const { rows, count } = await Recipe.findAndCountAll({
+
+  const totalCount = await Recipe.count({
+    where: { ownerId },
+  });
+
+  const { rows } = await Recipe.findAndCountAll({
     where: { ownerId },
     limit,
     offset,
@@ -241,13 +256,15 @@ export async function getRecipesByOwner(ownerId, { page = 1, limit = 10 }) {
         },
       },
     ],
+    distinct: true,
   });
+
   return {
     recipes: rows,
-    pagination: { page, limit, total: count },
+    pagination: { page, limit, total: totalCount },
   };
 }
-// Favorites functionality
+
 export async function addFavorite(recipeId, userId) {
   const recipe = await Recipe.findByPk(recipeId);
   if (!recipe) {
@@ -259,10 +276,8 @@ export async function addFavorite(recipeId, userId) {
     throw HttpError(404, "User not found");
   }
 
-  // Add to favorites using the association method
   await user.addFavorite(recipe);
 
-  // Return the recipe with updated favorites info
   return recipe;
 }
 
@@ -277,10 +292,8 @@ export async function removeFavorite(recipeId, userId) {
     throw HttpError(404, "User not found");
   }
 
-  // Remove from favorites using the association method
   await user.removeFavorite(recipe);
 
-  // Return the recipe with updated favorites info
   return recipe;
 }
 
@@ -292,7 +305,6 @@ export async function getFavoriteRecipes(userId, { page = 1, limit = 10 }) {
     throw HttpError(404, "User not found");
   }
 
-  // Get the favorites with pagination
   const favorites = await user.getFavorites({
     limit,
     offset,
@@ -308,7 +320,6 @@ export async function getFavoriteRecipes(userId, { page = 1, limit = 10 }) {
     ],
   });
 
-  // Count the total favorites
   const count = await user.countFavorites();
 
   return {
