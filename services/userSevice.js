@@ -71,7 +71,52 @@ export async function getCurrentUser(userId) {
   if (!user) {
     throw HttpError(401, "Not authorized");
   }
-  return user;
+
+  const recipesCount = await Recipe.count({ where: { ownerId: userId } });
+  const favoritesCount = await Favorite.count({ where: { userId: userId } });
+  const followersCount = await Follow.count({ where: { followingId: userId } });
+  const followingsCount = await Follow.count({ where: { followerId: userId } });
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatarURL: user.avatarURL,
+    recipesCount,
+    favoritesCount,
+    followersCount,
+    followingsCount,
+  };
+}
+
+export async function getUserDetails(userId, currentUserId) {
+  const user = await User.findByPk(userId, {
+    attributes: ["id", "name", "email", "avatarURL"],
+  });
+
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  const recipesCount = await Recipe.count({ where: { ownerId: userId } });
+  const favoritesCount = await Favorite.count({ where: { userId: userId } });
+  const followersCount = await Follow.count({ where: { followingId: userId } });
+  const followingsCount = await Follow.count({ where: { followerId: userId } });
+  const following =
+    (await Follow.findOne({
+      where: { followerId: currentUserId, followingId: userId },
+    })) !== null;
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatarURL: user.avatarURL,
+    recipesCount,
+    favoritesCount,
+    followersCount,
+    followingsCount,
+    following,
+  };
 }
 
 export async function logoutUser(userId) {
@@ -247,37 +292,4 @@ export async function unfollowUser(followerId, followingId) {
 
   await follow.destroy();
   return { message: "Unfollowed successfully" };
-}
-
-export async function getUserDetails(userId, currentUserId) {
-  const user = await User.findByPk(userId, {
-    attributes: ["id", "name", "email", "avatarURL"],
-  });
-
-  if (!user) {
-    throw HttpError(404, "User not found");
-  }
-
-  // Подсчитываем всю статистику для пользователя
-  const recipesCount = await Recipe.count({ where: { ownerId: userId } });
-  const favoritesCount = await Favorite.count({ where: { userId: userId } });
-  const followersCount = await Follow.count({ where: { followingId: userId } });
-  const followingsCount = await Follow.count({ where: { followerId: userId } });
-  const following =
-    (await Follow.findOne({
-      where: { followerId: currentUserId, followingId: userId },
-    })) !== null;
-
-  // Возвращаем один плоский объект со всеми данными
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    avatarURL: user.avatarURL,
-    recipesCount,
-    favoritesCount,
-    followersCount,
-    followingsCount,
-    following,
-  };
 }

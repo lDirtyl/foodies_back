@@ -64,7 +64,7 @@ const getCurrentUser = async (req, res) => {
 const updateAvatar = async (req, res) => {
   // The new avatar URL is available from the uploaded file
   if (!req.file) {
-    throw HttpError(400, 'Avatar file is required.');
+    throw HttpError(400, "Avatar file is required.");
   }
   const avatarURL = req.file.path;
 
@@ -77,9 +77,19 @@ const updateAvatar = async (req, res) => {
 const getFollowers = async (req, res) => {
   const { error, value } = paginationSchema.validate(req.query);
   if (error) throw HttpError(400, error.message);
-  
+
   const { page, limit } = value;
   const userId = req.user.id;
+  const followers = await userService.getFollowers(userId, { page, limit });
+  res.status(200).json(followers);
+};
+
+const getUserFollowers = async (req, res) => {
+  const { error, value } = paginationSchema.validate(req.query);
+  if (error) throw HttpError(400, error.message);
+
+  const { page, limit } = value;
+  const userId = req.params.userId;
   const followers = await userService.getFollowers(userId, { page, limit });
   res.status(200).json(followers);
 };
@@ -87,7 +97,7 @@ const getFollowers = async (req, res) => {
 const getFollowings = async (req, res) => {
   const { error, value } = paginationSchema.validate(req.query);
   if (error) throw HttpError(400, error.message);
-  
+
   const { page, limit } = value;
   const userId = req.user.id;
   const followings = await userService.getFollowings(userId, { page, limit });
@@ -124,7 +134,10 @@ const getUserDetails = async (req, res) => {
   const targetUserId = req.params.userId;
 
   // Используем новый сервис для получения полной информации
-  const userDetails = await userService.getUserDetails(targetUserId, req.user.id);
+  const userDetails = await userService.getUserDetails(
+    targetUserId,
+    req.user.id,
+  );
   res.status(200).json(userDetails);
 };
 
@@ -138,3 +151,4 @@ export const registerWrapper = controllerWrapper(register);
 export const loginWrapper = controllerWrapper(login);
 export const logoutWrapper = controllerWrapper(logout);
 export const getCurrentUserWrapper = controllerWrapper(getCurrentUser);
+export const getUserFollowersWrapper = controllerWrapper(getUserFollowers);

@@ -10,6 +10,7 @@ import {
   followUserWrapper,
   unfollowUserWrapper,
   getUserDetailsWrapper,
+  getUserFollowersWrapper,
 } from "../controllers/usersController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import { avatarUploader } from "../middleware/uploadMiddleware.js";
@@ -35,6 +36,12 @@ router.get(
   validateBody(paginationSchema),
   authMiddleware,
   getFollowersWrapper,
+);
+router.get(
+  "/:userId/followers",
+  validateBody(paginationSchema),
+  authMiddleware,
+  getUserFollowersWrapper,
 );
 router.get(
   "/followings",
