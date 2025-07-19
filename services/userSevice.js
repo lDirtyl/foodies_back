@@ -110,7 +110,7 @@ export async function getFollowers(userId, { page = 1, limit = 10 }) {
 
   const followers = await User.findAll({
     where: { id: { [Op.in]: followerIds } },
-    attributes: ["id", "name"],
+    attributes: ["id", "name", "avatarURL"],
     include: [
       {
         model: Recipe,
@@ -174,7 +174,7 @@ export async function getFollowings(userId, { page = 1, limit = 10 }) {
 
   const followings = await User.findAll({
     where: { id: { [Op.in]: followingIds } },
-    attributes: ["id", "name"],
+    attributes: ["id", "name", "avatarURL"],
     include: [
       {
         model: Recipe,
