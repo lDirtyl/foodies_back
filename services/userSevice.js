@@ -247,6 +247,7 @@ export async function getFollowings(userId, { page = 1, limit = 10 }) {
   });
   const userFollowerIds = userFollowers.map((follow) => follow.followerId);
 
+  
   const formattedFollowings = await Promise.all(
     followings.map(async (following) => {
       const recipesCount = await Recipe.count({
