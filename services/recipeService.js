@@ -1,9 +1,13 @@
-import { Op, Sequelize } from "sequelize";
-import Recipe from "../models/Recipe.js";
-import Ingredient from "../models/Ingredient.js";
-import RecipeIngredient from "../models/RecipeIngredient.js";
-import User from "../models/User.js";
+import { Op } from "sequelize";
 import HttpError from "../helpers/HttpError.js";
+import {
+  Recipe,
+  Ingredient,
+  RecipeIngredient,
+  User,
+  Category,
+  Area,
+} from "../models/index.js";
 
 export const searchRecipes = async ({
   keyword,
@@ -33,8 +37,8 @@ export const searchRecipes = async ({
       model: Ingredient,
       as: "ingredients",
       where: { id: ingredient },
-      through: { attributes: [] }, // Don't need data from the junction table here
-      required: true, // This makes it an INNER JOIN
+      through: { attributes: [] },
+      required: true,
     });
   }
 
@@ -49,10 +53,9 @@ export const searchRecipes = async ({
     include: includeOptions,
     limit,
     offset,
-    distinct: true, // Necessary when using includes with limits
+    distinct: true,
   });
 
-  // If a user is logged in, check which recipes are favorites
   if (userId) {
     const user = await User.findByPk(userId);
     if (user) {
@@ -78,7 +81,7 @@ export async function getRecipeById(id) {
         as: "ingredients",
         through: {
           model: RecipeIngredient,
-          attributes: ["measure"], // Include the measure attribute from the junction table
+          attributes: ["measure"],
         },
       },
       {
@@ -109,15 +112,7 @@ export async function getPopularRecipes({ page = 1, limit = 10 }) {
       LIMIT ${limit} OFFSET ${offset}
     `;
 
-    let popularRecipeIds;
-    try {
-      [popularRecipeIds] = await Recipe.sequelize.query(query);
-    } catch (err) {
-      throw HttpError(
-        500,
-        "Failed to retrieve popular recipes: " + err.message,
-      );
-    }
+    const [popularRecipeIds] = await Recipe.sequelize.query(query);
 
     if (!popularRecipeIds.length) {
       return {
@@ -128,7 +123,6 @@ export async function getPopularRecipes({ page = 1, limit = 10 }) {
 
     const recipeIds = popularRecipeIds.map((r) => r.id);
 
-    // Fetch full recipe details, preserving order
     const recipes = await Recipe.findAll({
       where: { id: { [Op.in]: recipeIds } },
       include: [
@@ -140,7 +134,6 @@ export async function getPopularRecipes({ page = 1, limit = 10 }) {
       ],
     });
 
-    // Map favorite counts to recipes and preserve order
     const recipesWithCounts = recipeIds
       .map((id) => {
         const recipe = recipes.find((r) => r.id === id);
@@ -153,7 +146,6 @@ export async function getPopularRecipes({ page = 1, limit = 10 }) {
       })
       .filter(Boolean);
 
-    // Get total count for pagination
     const totalCount = await Recipe.count();
 
     return {
@@ -167,31 +159,25 @@ export async function getPopularRecipes({ page = 1, limit = 10 }) {
 }
 
 export async function createRecipe(data, ownerId) {
-  // Extract ingredients from the data
   const { ingredients, ...recipeData } = data;
   let recipe;
 
   try {
-    // Create the recipe
     recipe = await Recipe.create({ ...recipeData, ownerId });
 
-    // If ingredients were provided, associate them with the recipe
     if (ingredients && ingredients.length > 0) {
-      // Create the recipe-ingredient associations with measures
       const recipeIngredients = ingredients.map(({ id, measure }) => ({
         recipeId: recipe.id,
         ingredientId: id,
         measure,
       }));
 
-      // Get the RecipeIngredient model
       await RecipeIngredient.bulkCreate(recipeIngredients);
     }
   } catch (error) {
     throw HttpError(400, "Failed to create recipe: " + error.message);
   }
 
-  // Return the newly created recipe with its ingredients
   return getRecipeById(recipe.id);
 }
 
@@ -326,4 +312,14 @@ export async function getFavoriteRecipes(userId, { page = 1, limit = 10 }) {
     recipes: favorites,
     pagination: { page, limit, total: count },
   };
+}
+
+export async function getCreationData() {
+  const [categories, ingredients, areas] = await Promise.all([
+    Category.findAll({ order: [["name", "ASC"]] }),
+    Ingredient.findAll({ order: [["name", "ASC"]] }),
+    Area.findAll({ order: [["name", "ASC"]] }),
+  ]);
+
+  return { categories, ingredients, areas };
 }
