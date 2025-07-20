@@ -1,4 +1,5 @@
-import { Ingredient } from '../db/models/index.js';
+import { Op } from "sequelize";
+import { Ingredient, Recipe, RecipeIngredient } from "../models/index.js";
 
 export const getAllIngredients = async () => {
   return await Ingredient.findAll({

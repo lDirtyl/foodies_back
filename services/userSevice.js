@@ -88,7 +88,16 @@ export async function getCurrentUser(userId) {
   };
 }
 
+const isUUID = (str) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+};
+
 export async function getUserDetails(userId, currentUserId) {
+  // Проверяем, является ли userId валидным UUID
+  if (!isUUID(userId)) {
+    throw HttpError(400, "Invalid user ID format");
+  }
   const user = await User.findByPk(userId, {
     attributes: ["id", "name", "email", "avatarURL"],
   });

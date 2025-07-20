@@ -1,4 +1,4 @@
-import * as areasService from "../services/areasService.js";
+import * as areasService from "../services/areaService.js";
 import controllerWrapper from "../helpers/controllerWrapper.js";
 import { paginationSchema } from "../schemas/paginationSchema.js";
 import HttpError from "../helpers/HttpError.js";
