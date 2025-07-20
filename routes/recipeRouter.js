@@ -2,6 +2,7 @@ import express from "express";
 import {
   searchRecipesWrapper,
   getPopularRecipesWrapper,
+  getRecipeFormDataWrapper,
   getRecipeByIdWrapper,
   createRecipeWrapper,
   getOwnRecipesWrapper,
@@ -34,6 +35,7 @@ router.get(
   getUserRecipesWrapper,
 );
 router.get("/favorites", authMiddleware, getFavoriteRecipesWrapper);
+router.get("/creation-data", getRecipeFormDataWrapper);
 router.get("/popular", getPopularRecipesWrapper);
 router.get("/:id", getRecipeByIdWrapper);
 router.get("/", optionalAuthMiddleware, searchRecipesWrapper);
