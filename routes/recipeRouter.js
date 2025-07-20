@@ -28,6 +28,7 @@ router.get(
   validateBody(paginationSchema),
   getOwnRecipesWrapper,
 );
+router.get("/creation-data", getRecipeFormDataWrapper);
 router.get(
   "/user/:id",
   authMiddleware,
@@ -35,9 +36,8 @@ router.get(
   getUserRecipesWrapper,
 );
 router.get("/favorites", authMiddleware, getFavoriteRecipesWrapper);
-router.get("/creation-data", getRecipeFormDataWrapper);
-router.get("/popular", getPopularRecipesWrapper);
 router.get("/:id", getRecipeByIdWrapper);
+router.get("/popular", getPopularRecipesWrapper);
 router.get("/", optionalAuthMiddleware, searchRecipesWrapper);
 
 router.post(
