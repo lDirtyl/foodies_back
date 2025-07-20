@@ -41,9 +41,15 @@ const getRecipeById = async (req, res, next) => {
 };
 
 const getRecipeFormData = async (req, res, next) => {
-  const categories = await getAllCategories();
-  const areas = await getAllAreas();
-  const ingredients = await getAllIngredients();
+  const results = await Promise.allSettled([
+    getAllCategories(),
+    getAllAreas(),
+    getAllIngredients(),
+  ]);
+
+  const categories = results[0].status === 'fulfilled' ? results[0].value : [];
+  const areas = results[1].status === 'fulfilled' ? results[1].value : [];
+  const ingredients = results[2].status === 'fulfilled' ? results[2].value : [];
 
   res.json({
     categories,
