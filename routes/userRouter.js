@@ -11,9 +11,10 @@ import {
   unfollowUserWrapper,
   getUserDetailsWrapper,
   getUserFollowersWrapper,
+  uploadImageWrapper, // Import the new wrapper
 } from "../controllers/usersController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
-import { avatarUploader } from "../middleware/uploadMiddleware.js";
+import { avatarUploader, recipeImageUploader } from "../middlewares/imageUploader.js"; // Import the new universal uploaders
 import { paginationSchema } from "../schemas/paginationSchema.js";
 import validateBody from "../helpers/validateBody.js";
 
@@ -28,7 +29,7 @@ router.get("/current", authMiddleware, getCurrentUserWrapper);
 router.patch(
   "/avatar",
   authMiddleware,
-  avatarUploader.single("avatar"),
+  avatarUploader.single("avatar"), // Uses the new avatarUploader
   updateAvatarWrapper,
 );
 router.get(
@@ -52,5 +53,8 @@ router.get(
 router.post("/follow", authMiddleware, followUserWrapper);
 router.delete("/follow", authMiddleware, unfollowUserWrapper);
 router.get("/:userId/details", authMiddleware, getUserDetailsWrapper);
+
+// Route for uploading a generic image (e.g., for recipes)
+router.post('/upload-image', authMiddleware, recipeImageUploader.single('image'), uploadImageWrapper); // Uses the new recipeImageUploader
 
 export default router;

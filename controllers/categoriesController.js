@@ -1,4 +1,4 @@
-import * as categoriesService from "../services/categoriesService.js";
+import * as categoriesService from "../services/categoryService.js";
 import controllerWrapper from "../helpers/controllerWrapper.js";
 import { paginationSchema } from "../schemas/paginationSchema.js";
 import HttpError from "../helpers/HttpError.js";

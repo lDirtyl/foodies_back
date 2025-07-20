@@ -1,4 +1,4 @@
-import * as ingredientsService from "../services/ingredientsService.js";
+import * as ingredientsService from "../services/ingredientService.js";
 import controllerWrapper from "../helpers/controllerWrapper.js";
 import { paginationSchema } from "../schemas/paginationSchema.js";
 import HttpError from "../helpers/HttpError.js";

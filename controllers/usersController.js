@@ -141,6 +141,13 @@ const getUserDetails = async (req, res) => {
   res.status(200).json(userDetails);
 };
 
+const uploadImage = async (req, res) => {
+  if (!req.file) {
+    throw HttpError(400, "Image file is required");
+  }
+  res.status(200).json({ imageUrl: req.file.path });
+};
+
 export const getUserDetailsWrapper = controllerWrapper(getUserDetails);
 export const unfollowUserWrapper = controllerWrapper(unfollowUser);
 export const followUserWrapper = controllerWrapper(followUser);
@@ -152,3 +159,4 @@ export const loginWrapper = controllerWrapper(login);
 export const logoutWrapper = controllerWrapper(logout);
 export const getCurrentUserWrapper = controllerWrapper(getCurrentUser);
 export const getUserFollowersWrapper = controllerWrapper(getUserFollowers);
+export const uploadImageWrapper = controllerWrapper(uploadImage);

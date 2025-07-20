@@ -16,42 +16,46 @@ import {
 import authMiddleware from "../middlewares/authMiddleware.js";
 import optionalAuthMiddleware from "../middlewares/optionalAuthMiddleware.js";
 import { upload } from "../middlewares/uploadMiddleware.js";
-import cloudinaryMiddleware from "../middlewares/cloudinaryMiddleware.js";
 import { paginationSchema } from "../schemas/paginationSchema.js";
 import validateBody from "../helpers/validateBody.js";
+import { recipeImageUploader } from "../middlewares/imageUploader.js";
+
 
 const router = express.Router();
 
+// Public routes first
+router.get("/", optionalAuthMiddleware, searchRecipesWrapper);
+router.get("/creation-data", getRecipeFormDataWrapper);
+router.get("/popular", getPopularRecipesWrapper);
+
+// Routes with auth and dynamic params later
 router.get(
   "/own",
   authMiddleware,
   validateBody(paginationSchema),
   getOwnRecipesWrapper,
 );
-router.get("/creation-data", getRecipeFormDataWrapper);
+router.get("/favorites", authMiddleware, getFavoriteRecipesWrapper);
+
+// Routes with dynamic :id at the very end
 router.get(
   "/user/:id",
   authMiddleware,
   validateBody(paginationSchema),
   getUserRecipesWrapper,
 );
-router.get("/favorites", authMiddleware, getFavoriteRecipesWrapper);
 router.get("/:id", getRecipeByIdWrapper);
-router.get("/popular", getPopularRecipesWrapper);
-router.get("/", optionalAuthMiddleware, searchRecipesWrapper);
 
 router.post(
   "/",
   authMiddleware,
-  upload.single("thumb"),
-  cloudinaryMiddleware,
+  recipeImageUploader.single("thumb"),
   createRecipeWrapper,
 );
 router.put(
   "/:id",
   authMiddleware,
-  upload.single("thumb"),
-  cloudinaryMiddleware,
+  recipeImageUploader.single("thumb"),
   updateRecipeWrapper,
 );
 
