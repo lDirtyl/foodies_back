@@ -1,4 +1,7 @@
 import * as recipeService from "../services/recipeService.js";
+import { getAllCategories } from '../services/categoryService.js';
+import { getAllAreas } from '../services/areaService.js';
+import { getAllIngredients } from '../services/ingredientService.js';
 import controllerWrapper from "../helpers/controllerWrapper.js";
 import HttpError from "../helpers/HttpError.js";
 import { paginationSchema } from "../schemas/paginationSchema.js";
@@ -35,6 +38,18 @@ const getRecipeById = async (req, res, next) => {
   const recipe = await recipeService.getRecipeById(id);
   if (!recipe) throw HttpError(404, "Recipe not found");
   res.json(recipe);
+};
+
+const getRecipeFormData = async (req, res, next) => {
+  const categories = await getAllCategories();
+  const areas = await getAllAreas();
+  const ingredients = await getAllIngredients();
+
+  res.json({
+    categories,
+    areas,
+    ingredients,
+  });
 };
 
 const getPopularRecipes = async (req, res, next) => {
@@ -172,6 +187,7 @@ const getFavoriteRecipes = async (req, res, next) => {
 
 export const searchRecipesWrapper = controllerWrapper(searchRecipes);
 export const getRecipeByIdWrapper = controllerWrapper(getRecipeById);
+export const getRecipeFormDataWrapper = controllerWrapper(getRecipeFormData);
 export const getPopularRecipesWrapper = controllerWrapper(getPopularRecipes);
 export const createRecipeWrapper = controllerWrapper(createRecipe);
 export const updateRecipeWrapper = controllerWrapper(updateRecipe);

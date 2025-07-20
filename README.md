@@ -85,6 +85,7 @@ npm install express-list-endpoints
 
 ### Recipes (`/api/recipes`)
 - `GET /` - Поиск рецептов с фильтрацией и пагинацией (query params: `keyword`, `category`, `area`, `ingredient`, `page`, `limit`).
+- `GET /creation-data` - Получение данных для создания рецепта (категории, ингредиенты, регионы).
 - `POST /` - Создание нового рецепта (требуется аутентификация, ожидает `multipart/form-data`).
 - `GET /popular` - Получение списка популярных рецептов.
 - `GET /own` - Получение рецептов, созданных текущим пользователем (требуется аутентификация).
