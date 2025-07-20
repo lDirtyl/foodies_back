@@ -25,8 +25,8 @@ const router = express.Router();
 
 // Public routes first
 router.get("/", optionalAuthMiddleware, searchRecipesWrapper);
-router.get("/creation-data", getRecipeFormDataWrapper);
 router.get("/popular", getPopularRecipesWrapper);
+router.get("/creation-data", getRecipeFormDataWrapper);
 
 // Routes with auth and dynamic params later
 router.get(
@@ -50,7 +50,14 @@ router.post(
   "/",
   authMiddleware,
   recipeImageUploader.single("thumb"),
-  createRecipeWrapper,
+  createRecipeWrapper
+);
+
+router.put(
+  "/:id",
+  authMiddleware,
+  recipeImageUploader.single("thumb"),
+  updateRecipeWrapper
 );
 router.put(
   "/:id",
