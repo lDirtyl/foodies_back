@@ -67,9 +67,40 @@ export const searchRecipes = async ({
     }
   }
 
+  let availableIngredients = [];
+  let availableAreas = [];
+
+  if (category) {
+    // Find all unique area IDs for the given category
+    const areas = await Recipe.findAll({
+      where: { categoryId: category },
+      attributes: [[Recipe.sequelize.fn('DISTINCT', Recipe.sequelize.col('areaId')), 'areaId']],
+      raw: true,
+    });
+    availableAreas = areas.map(a => a.areaId).filter(id => id);
+
+    // Find all unique ingredient IDs for the given category
+    const recipesInCategory = await Recipe.findAll({
+      where: { categoryId: category },
+      attributes: ['id'],
+    });
+    const recipeIds = recipesInCategory.map(r => r.id);
+
+    if (recipeIds.length > 0) {
+      const ingredients = await RecipeIngredient.findAll({
+        where: { recipeId: { [Op.in]: recipeIds } },
+        attributes: [[Recipe.sequelize.fn('DISTINCT', Recipe.sequelize.col('ingredientId')), 'ingredientId']],
+        raw: true,
+      });
+      availableIngredients = ingredients.map(i => i.ingredientId);
+    }
+  }
+
   return {
     recipes: rows,
     pagination: { page: parseInt(page), limit: parseInt(limit), total: count },
+    availableAreas,
+    availableIngredients,
   };
 };
 
